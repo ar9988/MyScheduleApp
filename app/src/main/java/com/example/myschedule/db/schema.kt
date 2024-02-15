@@ -1,10 +1,11 @@
-package com.example.myschedule
+package com.example.myschedule.db
 
 import androidx.room.*
 
 @Entity
 data class Schedule (
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0L,
     val name: String,
     val content: String,
     val date: String

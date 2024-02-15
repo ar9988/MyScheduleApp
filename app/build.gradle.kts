@@ -8,13 +8,15 @@ android {
     namespace = "com.example.myschedule"
     compileSdk = 34
 
+    viewBinding{
+        enable = true
+    }
     defaultConfig {
         applicationId = "com.example.myschedule"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,11 +40,10 @@ android {
 
 dependencies {
 
-    val roomVersion = "2.5.2"
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
-
     implementation("androidx.room:room-ktx:$roomVersion")
     testImplementation("androidx.room:room-testing:$roomVersion")
     implementation("androidx.core:core-ktx:1.12.0")

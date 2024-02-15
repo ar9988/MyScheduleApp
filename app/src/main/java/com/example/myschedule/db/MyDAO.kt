@@ -1,14 +1,11 @@
-package com.example.myschedule
+package com.example.myschedule.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Relation
-import androidx.room.Transaction
 
 @Dao
 interface MyDAO {
@@ -22,6 +19,6 @@ interface MyDAO {
     suspend fun getScheduleByDate(date: String): List<Schedule>
 
     @Delete
-    suspend fun deleteStudent(schedule: Schedule)
+    suspend fun deleteSchedule(schedule: Schedule)
 
 }
