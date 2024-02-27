@@ -7,17 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
 import com.example.myschedule.customView.TimePiece
 import com.example.myschedule.databinding.DayLayoutBinding
-import com.example.myschedule.db.MyDAO
-import com.example.myschedule.db.MyDailyDatabase
-import com.example.myschedule.db.MyDatabase
 import com.example.myschedule.viewModel.MyViewModel
 import com.example.myschedule.viewModel.MyDailyViewModel
 import kotlinx.coroutines.launch
@@ -27,6 +22,7 @@ class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
     private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
+
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
     override fun onCreateView(

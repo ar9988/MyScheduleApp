@@ -13,7 +13,6 @@ import com.example.myschedule.db.Schedule
 import com.example.myschedule.fragment.DayFragment
 import com.example.myschedule.fragment.MonthFragment
 import com.example.myschedule.fragment.WeekFragment
-import com.example.myschedule.viewModel.MyDailyViewModel
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fragmentMonth: MonthFragment
     private lateinit var tabLayout: TabLayout
     private lateinit var inputBtn: Button
+    private lateinit var deleteBtn: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -35,8 +35,13 @@ class MainActivity : AppCompatActivity() {
         fragmentWeek = WeekFragment()
         supportFragmentManager.beginTransaction().replace(binding.tabContent.id, fragmentDay).commit()
         inputBtn = binding.editBtn
+        deleteBtn = binding.editBtn2
         inputBtn.setOnClickListener {
             val intent = Intent(this, InputActivity::class.java)
+            startActivity(intent)
+        }
+        deleteBtn.setOnClickListener {
+            val intent = Intent(this,DeleteActivity::class.java)
             startActivity(intent)
         }
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{

@@ -6,19 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [Schedule::class],
-    exportSchema = false, version = 2)
-abstract class MyDatabase : RoomDatabase() {
+    exportSchema = false, version = 1)
+abstract class MyPeriodScheduleDatabase : RoomDatabase() {
     abstract fun getMyDao() : MyDAO
     companion object {
-        private var INSTANCE: MyDatabase? = null
-        fun getDatabase(context: Context) : MyDatabase {
+        private var INSTANCE: MyPeriodScheduleDatabase? = null
+        fun getDatabase(context: Context) : MyPeriodScheduleDatabase {
             if (INSTANCE == null) {
                 INSTANCE = Room.databaseBuilder(
-                    context, MyDatabase::class.java, "schedule_database")
+                    context, MyPeriodScheduleDatabase::class.java, "Period_schedule_database")
                     .fallbackToDestructiveMigration()
                     .build()
             }
-            return INSTANCE as MyDatabase
+            return INSTANCE as MyPeriodScheduleDatabase
         }
     }
 }

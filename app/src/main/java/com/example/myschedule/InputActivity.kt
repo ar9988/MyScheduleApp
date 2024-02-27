@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.ViewModelProvider
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyDailyViewModel
@@ -163,26 +162,30 @@ class InputActivity: AppCompatActivity()  {
                             Toast.makeText(this@InputActivity, "시간을 입력하세요", Toast.LENGTH_SHORT).show()
                         }
                         else{
-                            if(hour2.toInt()>hour.toInt()){
-                                Toast.makeText(this@InputActivity, "올바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
-                            }
-                            else if(hour.toInt()==hour2.toInt()){
-                                if(minute.toInt()>=minute2.toInt()){
-                                    Toast.makeText(this@InputActivity, "올바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
-                                }
-                                else{
-                                    startTime="${hour}-${minute}"
-                                    endTime="${hour2}-${minute2}"
-                                    state++
-                                    activateState(state)
-                                }
-                            }
-                            else{
-                                startTime="${hour}-${minute}"
-                                endTime="${hour2}-${minute2}"
-                                state++
-                                activateState(state)
-                            }
+                            startTime="${hour}-${minute}"
+                            endTime="${hour2}-${minute2}"
+                            state++
+                            activateState(state)
+//                            if(hour2.toInt()>hour.toInt()){
+//                                Toast.makeText(this@InputActivity, "올바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
+//                            }
+//                            else if(hour.toInt()==hour2.toInt()){
+//                                if(minute.toInt()>=minute2.toInt()){
+//                                    Toast.makeText(this@InputActivity, "올바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
+//                                }
+//                                else{
+//                                    startTime="${hour}-${minute}"
+//                                    endTime="${hour2}-${minute2}"
+//                                    state++
+//                                    activateState(state)
+//                                }
+//                            }
+//                            else{
+//                                startTime="${hour}-${minute}"
+//                                endTime="${hour2}-${minute2}"
+//                                state++
+//                                activateState(state)
+//                            }
                         }
                     }
                     2-> {
