@@ -5,16 +5,21 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import com.example.myschedule.databinding.ActivityMainBinding
 import com.example.myschedule.db.MyDAO
 import com.example.myschedule.db.MyDatabase
+import com.example.myschedule.db.Schedule
 import com.example.myschedule.fragment.DayFragment
 import com.example.myschedule.fragment.MonthFragment
 import com.example.myschedule.fragment.WeekFragment
+import com.example.myschedule.viewModel.MyDailyViewModel
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var myDao: MyDAO
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var fragmentDay: DayFragment
     private lateinit var fragmentWeek: WeekFragment
@@ -24,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        myDao = MyDatabase.getDatabase(this).getMyDao()
         tabLayout = binding.tabLayout
         fragmentDay = DayFragment()
         fragmentMonth = MonthFragment()

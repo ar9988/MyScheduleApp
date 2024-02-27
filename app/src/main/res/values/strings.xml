@@ -34,9 +34,7 @@
     <string name="hint1"> year</string>
     <string name="month">월</string>
     <string name="day">일</string>
-    <string name="timeBtn1">날자 선택</string>
-    <string name="timeBtn2">시작 시간</string>
     <string name="hour">시</string>
     <string name="minute">분</string>
-    <string name="timeBtn3">종료 시간</string>
+    <string name="_0">0</string>
 </resources>

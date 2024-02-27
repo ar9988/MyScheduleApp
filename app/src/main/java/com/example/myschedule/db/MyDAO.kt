@@ -16,9 +16,11 @@ interface MyDAO {
     fun getAllSchedule(): LiveData<List<Schedule>>
 
     @Query("SELECT * FROM Schedule WHERE date = :date")
-    suspend fun getScheduleByDate(date: String): List<Schedule>
+    fun getScheduleByDate(date: String): LiveData<List<Schedule>>
 
     @Delete
     suspend fun deleteSchedule(schedule: Schedule)
 
+    @Query("DELETE FROM Schedule")
+    suspend fun deleteAllSchedule()
 }

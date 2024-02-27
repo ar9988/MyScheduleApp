@@ -1,5 +1,7 @@
 package com.example.myschedule.fragment
 
+import android.app.AlertDialog
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,20 +10,84 @@ import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
 import com.example.myschedule.customView.TimePiece
 import com.example.myschedule.databinding.DayLayoutBinding
+import com.example.myschedule.db.MyDAO
+import com.example.myschedule.db.MyDailyDatabase
+import com.example.myschedule.db.MyDatabase
+import com.example.myschedule.viewModel.MyViewModel
+import com.example.myschedule.viewModel.MyDailyViewModel
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
+    private lateinit var myDailyViewModel: MyDailyViewModel
+    private lateinit var myViewModel: MyViewModel
+    private val sdf = SimpleDateFormat("yyyy-MM-dd")
+    private var calendar = Calendar.getInstance()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding= DayLayoutBinding.inflate(inflater)
-        val testView : TimePiece? = context?.let { TimePiece(it,attrs = null,-30F,60F,R.color.rainbow7,binding) }
+        myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
+        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         val frame: FrameLayout = binding.watchCenter
-        frame.addView(testView)
+        val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()
+        dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
+            for (schedule in dailySchedules) {
+                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,R.color.rainbow7,binding) }
+                v?.setOnClickListener(){
+                    val alertDialog = AlertDialog.Builder(context)
+                        .setTitle("Delete Schedule")
+                        .setMessage("Are you sure you want to delete this schedule?")
+                        .setPositiveButton("Yes") { dialog, _ ->
+                            myDailyViewModel.viewModelScope.launch {
+                                myDailyViewModel.deleteSchedule(schedule)
+                            }
+                            dialog.dismiss()
+                            binding.watchCenter.removeView(v)
+                        }
+                        .setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                    alertDialog.show()
+                }
+                frame.addView(v)
+            }
+        }
+        val date = sdf.format(calendar.time)
+        var daySchedule = myViewModel.getScheduleByDate(date)
+        daySchedule.observe(viewLifecycleOwner){schedules ->
+            for(schedule in schedules){
+                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,R.color.rainbow7,binding) }
+                v?.setOnClickListener(){
+                    val alertDialog = AlertDialog.Builder(context)
+                        .setTitle("Delete Schedule")
+                        .setMessage("Are you sure you want to delete this schedule?")
+                        .setPositiveButton("Yes") { dialog, _ ->
+                            myViewModel.viewModelScope.launch {
+                                myViewModel.deleteSchedule(schedule)
+                            }
+                            dialog.dismiss()
+                            binding.watchCenter.removeView(v)
+                        }
+                        .setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                    alertDialog.show()
+                }
+                frame.addView(v)
+            }
+        }
         return binding.root
     }
+
+
 }
