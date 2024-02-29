@@ -60,6 +60,7 @@ class DayFragment : Fragment(){
         val date = sdf.format(calendar.time)
         var daySchedule = myViewModel.getScheduleByDate(date)
         daySchedule.observe(viewLifecycleOwner){schedules ->
+            //frameLayout 청소과정이필요할듯. 업데이트때마다 붙이면 무한으로 늘어난다. 어디 배열에넣어서 관리하다 한번에지우고 다시붙히기.
             for(schedule in schedules){
                 val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,R.color.rainbow7,binding) }
                 v?.setOnClickListener(){

@@ -1,5 +1,6 @@
-package com.example.myschedule
+package com.example.myschedule.activity
 
+import MyPeriodScheduleViewModel
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ class DeleteActivity : AppCompatActivity() {
     private lateinit var binding : DeleteLayoutBinding
     private val myDailyViewModel: MyDailyViewModel by viewModels()
     private val myViewModel: MyViewModel by viewModels()
+    private val myPeriodScheduleViewModel: MyPeriodScheduleViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         binding = DeleteLayoutBinding.inflate(layoutInflater)

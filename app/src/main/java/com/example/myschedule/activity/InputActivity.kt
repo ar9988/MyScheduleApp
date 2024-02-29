@@ -1,5 +1,6 @@
-package com.example.myschedule
+package com.example.myschedule.activity
 
+import MyPeriodScheduleViewModel
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
@@ -22,6 +23,7 @@ class InputActivity: AppCompatActivity()  {
     private lateinit var binding : InputLayoutBinding
     private val myDailyViewModel: MyDailyViewModel by viewModels()
     private val myViewModel: MyViewModel by viewModels()
+    private val myPeriodViewModel : MyPeriodScheduleViewModel by viewModels()
     private var startDay: Calendar = Calendar.getInstance()
     private var endDay: Calendar = Calendar.getInstance()
     private lateinit var title:String
@@ -162,30 +164,11 @@ class InputActivity: AppCompatActivity()  {
                             Toast.makeText(this@InputActivity, "시간을 입력하세요", Toast.LENGTH_SHORT).show()
                         }
                         else{
+                            //시간처리
                             startTime="${hour}-${minute}"
                             endTime="${hour2}-${minute2}"
                             state++
                             activateState(state)
-//                            if(hour2.toInt()>hour.toInt()){
-//                                Toast.makeText(this@InputActivity, "올바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
-//                            }
-//                            else if(hour.toInt()==hour2.toInt()){
-//                                if(minute.toInt()>=minute2.toInt()){
-//                                    Toast.makeText(this@InputActivity, "올바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
-//                                }
-//                                else{
-//                                    startTime="${hour}-${minute}"
-//                                    endTime="${hour2}-${minute2}"
-//                                    state++
-//                                    activateState(state)
-//                                }
-//                            }
-//                            else{
-//                                startTime="${hour}-${minute}"
-//                                endTime="${hour2}-${minute2}"
-//                                state++
-//                                activateState(state)
-//                            }
                         }
                     }
                     2-> {
@@ -232,26 +215,22 @@ class InputActivity: AppCompatActivity()  {
                                 finish()
                             }
                         } else {
-                            val currentDate = startDay.clone() as Calendar
                             if(title.isEmpty()||content.isEmpty()){
                                 Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
                             }
                             else{
-                                while (currentDate.before(endDay)) {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        with(myViewModel) {
-                                            insertSchedule(
-                                                Schedule(
-                                                    0L,
-                                                    title,
-                                                    content,
-                                                    "${sdf.format(currentDate.time)}",
-                                                    "${startTime}-${endTime}"
-                                                )
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    with(myPeriodViewModel) {
+                                        insertSchedule(
+                                            Schedule(
+                                                0L,
+                                                title,
+                                                content,
+                                                "${sdf.format(startDay.time)}-${sdf.format(endDay.time)}",
+                                                "${startTime}-${endTime}"
                                             )
-                                        }
+                                        )
                                     }
-                                    currentDate.add(Calendar.DATE, 1)
                                 }
                                 finish()
                             }

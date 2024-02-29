@@ -29,7 +29,7 @@
 
             <RadioButton
                 android:layout_weight="1"
-                android:text="상시일정"
+                android:text="@string/rd_btn1"
                 android:checked="true"
                 android:id="@+id/rg_btn1"
                 android:layout_width="0dp"
@@ -37,13 +37,13 @@
 
             <RadioButton
                 android:layout_weight="1"
-                android:text="하루일정"
+                android:text="@string/rd_btn2"
                 android:id="@+id/rg_btn2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
             <RadioButton
                 android:layout_weight="1"
-                android:text="기간일정"
+                android:text="@string/rd_btn3"
                 android:id="@+id/rg_btn3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
