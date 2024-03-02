@@ -11,7 +11,7 @@
         android:id="@+id/text0"
         android:text="유형 : "
         android:textStyle="bold"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="일정 제목 : "
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/text0"
         app:layout_constraintTop_toBottomOf="@id/text0"
@@ -42,7 +42,7 @@
         app:layout_constraintVertical_bias="0.03"/>
     <EditText
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         app:layout_constraintStart_toEndOf="@id/text1"
         app:layout_constraintTop_toTopOf="@id/text1"
         app:layout_constraintBottom_toBottomOf="@id/text1"
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="일정 내용 : "
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/text1"
         app:layout_constraintStart_toStartOf="@id/text1"
@@ -61,7 +61,7 @@
 
     <EditText
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         app:layout_constraintStart_toEndOf="@id/text2"
         app:layout_constraintTop_toTopOf="@id/text2"
         app:layout_constraintBottom_toBottomOf="@id/text2"
@@ -168,6 +168,7 @@
         app:layout_constraintStart_toStartOf="@id/DatePicker"
         app:layout_constraintTop_toBottomOf="@id/DatePicker"/>
     <Button
+        android:id="@+id/deleteBtn"
         android:text="삭제"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -178,6 +179,7 @@
         app:layout_constraintBottom_toBottomOf="@id/checkbox"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        tools:listitem="@layout/schedule_item"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

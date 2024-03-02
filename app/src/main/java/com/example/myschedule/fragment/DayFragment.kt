@@ -1,5 +1,6 @@
 package com.example.myschedule.fragment
 
+import MyPeriodScheduleViewModel
 import android.app.AlertDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
@@ -22,7 +23,7 @@ class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
     private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
-
+    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
     override fun onCreateView(
@@ -31,6 +32,7 @@ class DayFragment : Fragment(){
     ): View {
         binding= DayLayoutBinding.inflate(inflater)
         myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
+        myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         val frame: FrameLayout = binding.watchCenter
         val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()

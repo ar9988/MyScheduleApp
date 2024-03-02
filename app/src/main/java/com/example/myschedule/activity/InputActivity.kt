@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.ViewModelProvider
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyDailyViewModel
@@ -21,9 +22,9 @@ import java.util.Calendar
 
 class InputActivity: AppCompatActivity()  {
     private lateinit var binding : InputLayoutBinding
-    private val myDailyViewModel: MyDailyViewModel by viewModels()
-    private val myViewModel: MyViewModel by viewModels()
-    private val myPeriodViewModel : MyPeriodScheduleViewModel by viewModels()
+    private lateinit var myDailyViewModel: MyDailyViewModel
+    private lateinit var myViewModel: MyViewModel
+    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     private var startDay: Calendar = Calendar.getInstance()
     private var endDay: Calendar = Calendar.getInstance()
     private lateinit var title:String
@@ -36,6 +37,9 @@ class InputActivity: AppCompatActivity()  {
     private lateinit var frames:Array<ConstraintLayout>
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
+        myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
+        myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
+        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         binding = InputLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         frames = arrayOf(binding.frame0, binding.frame1, binding.frame2)
@@ -220,7 +224,7 @@ class InputActivity: AppCompatActivity()  {
                             }
                             else{
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    with(myPeriodViewModel) {
+                                    with(myPeriodScheduleViewModel) {
                                         insertSchedule(
                                             Schedule(
                                                 0L,
