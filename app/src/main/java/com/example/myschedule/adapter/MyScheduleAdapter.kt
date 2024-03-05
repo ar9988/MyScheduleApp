@@ -1,22 +1,43 @@
 package com.example.myschedule.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myschedule.R
 import com.example.myschedule.databinding.ScheduleItemBinding
 import com.example.myschedule.db.Schedule
-private lateinit var binding : ScheduleItemBinding
 
 class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapter.ScheduleViewHolder>(){
-    inner class ScheduleViewHolder(private val binding: ScheduleItemBinding) : RecyclerView.ViewHolder(binding.root){
+    private val checkedItems = HashSet<Schedule>()
+    inner class ScheduleViewHolder(val binding: ScheduleItemBinding) : RecyclerView.ViewHolder(binding.root){
+
         fun bind(schedule: Schedule) {
             binding.title.text = schedule.name
             binding.content.text = schedule.content
             binding.date.text = schedule.date
+            binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    toggleItemChecked(schedule)
+                } else {
+                    toggleItemChecked(schedule)
+                }
+            }
         }
+        fun toggle(isChecked:Boolean){
+            this.binding.checkbox.isChecked = isChecked
+        }
+
+    }
+    fun toggleItemChecked(schedule: Schedule) {
+        if (checkedItems.contains(schedule)) {
+            checkedItems.remove(schedule)
+        } else {
+            checkedItems.add(schedule)
+        }
+    }
+
+    fun getCheckedItems(): Set<Schedule> {
+        return checkedItems
     }
 
     override fun getItemCount(): Int = scheduleList.size
@@ -30,4 +51,5 @@ class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
         holder.bind(scheduleList[position])
     }
+
 }

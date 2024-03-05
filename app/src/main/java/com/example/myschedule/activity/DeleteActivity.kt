@@ -1,25 +1,23 @@
 package com.example.myschedule.activity
 
 import MyPeriodScheduleViewModel
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myschedule.R
 import com.example.myschedule.adapter.MyScheduleAdapter
 import com.example.myschedule.databinding.DeleteLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyDailyViewModel
 import com.example.myschedule.viewModel.MyViewModel
+import kotlinx.coroutines.launch
 import java.lang.NullPointerException
+import java.time.Period
 import java.util.Calendar
 
 class DeleteActivity : AppCompatActivity() {
@@ -27,45 +25,36 @@ class DeleteActivity : AppCompatActivity() {
     private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
     private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
-    private var startDay: Calendar = Calendar.getInstance()
-    private var endDay: Calendar = Calendar.getInstance()
-    private lateinit var title:String
-    private lateinit var content:String
-    private lateinit var startTime:String
-    private lateinit var endTime:String
-    private lateinit var scheduleData : LiveData<List<Schedule>>
+    private lateinit var schedules : Array<List<Schedule>>
+    private lateinit var adapter : MyScheduleAdapter
+
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         binding = DeleteLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
         myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
-        setContentView(binding.root)
-        scheduleData = myDailyViewModel.getAllSchedules()
-        val scheduleList = listOf(
-            Schedule(1, "Meeting", "Discuss project progress", "2024-03-03", "10:00-11:00"),
-            Schedule(2, "Lunch", "Meet with colleagues for lunch", "2024-03-03", "12:00-13:00"),
-            Schedule(3, "Presentation", "Prepare slides for presentation", "2024-03-04", "14:00-15:00"),
-            // 여기에 더 많은 더미 스케줄 데이터 추가 가능
-        )
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = MyScheduleAdapter(scheduleList)
+        schedules = Array(3) { emptyList() }
+        val livedata1 = myDailyViewModel.getAllSchedules()
+        livedata1.observe(this) {
+            schedules[0] = it
+        }
+        val livedata2 = myViewModel.getAllSchedules()
+        livedata2.observe(this) {
+            schedules[1] = it
+        }
+        val livedata3 = myPeriodScheduleViewModel.getAllSchedules()
+        livedata3.observe(this) {
+            schedules[2] = it
+        }
         setupListeners()
     }
 
     private fun setupListeners() {
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                when(position){
-                    0 -> scheduleData = myDailyViewModel.getAllSchedules()
-                    1 -> scheduleData = myViewModel.getAllSchedules()
-                    2 -> scheduleData = myPeriodScheduleViewModel.getAllSchedules()
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-        }
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = MyScheduleAdapter(emptyList())
+        binding.recyclerView.adapter = adapter
         binding.DatePicker.setOnClickListener { binding.DatePicker.setOnClickListener {
             val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
@@ -80,25 +69,93 @@ class DeleteActivity : AppCompatActivity() {
             }, year, month, day).show()
         } }
         binding.SearchBtn.setOnClickListener{
-            if(scheduleData==null){
-                Toast.makeText(this@DeleteActivity, "유형을 선택하세요", Toast.LENGTH_SHORT).show()
+            val pos = binding.spinner.selectedItemPosition
+            val etArray  = mutableListOf<String>()
+            var searchedSchedules: MutableList<Schedule> = mutableListOf()
+            etArray.add( binding.etYear.text.toString())
+            etArray.add( binding.etMonth.text.toString())
+            etArray.add( binding.etDay.text.toString())
+            etArray.add( binding.etTitle.text.toString())
+            etArray.add( binding.etContent.text.toString())
+            if(etArray[1]!="") etArray[1] = (etArray[1].toInt()-1).toString()
+            when (pos){
+                0 ->{
+                    for(schedule in schedules[pos]){
+                        val contents = listOf(schedule.name,schedule.content)
+                        var flag = true
+                        for((i,text) in contents.withIndex()){
+                            if(etArray[i+3]!=""){
+                                if (!text.contains(etArray[i+3])) {
+                                    flag = false
+                                    break
+                                }
+                            }
+                        }
+                        if(flag) searchedSchedules.add(schedule)
+                    }
+                }
+                1 ->{
+                    for(schedule in schedules[pos]){
+                        val dates = schedule.date.split("-")
+                        val contents = listOf(schedule.name,schedule.content)
+                        val data = dates + contents
+                        var flag = true
+                        for((i,text) in etArray.withIndex()){
+                            if(i<3 && text != ""){
+                                if(data[i]!=text){
+                                    flag=false
+                                    break
+                                }
+                            }else if(text!=""){
+                                if(!data[i].contains(text)){
+                                    flag=false
+                                    break
+                                }
+                            }
+                        }
+                        if(flag) searchedSchedules.add(schedule)
+                    }
+                }
+                2 ->{
+                    for(schedule in schedules[pos]){
+                        val dates = schedule.date.split("-")
+                        val contents = listOf(schedule.name,schedule.content)
+                        var flag = true
+                        for((i,text) in etArray.withIndex()){
+                            if(i<3 && text != ""){
+                                if(text.toInt()<dates[i].toInt()||text.toInt()>dates[i+3].toInt()){
+                                    flag=false
+                                    break
+                                }
+                            }else if(text!=""){
+                                if(!contents[i-3].contains(text)){
+                                    flag=false
+                                    break
+                                }
+                            }
+                        }
+                        if(flag) searchedSchedules.add(schedule)
+                    }
+                }
             }
-            else{
-//                val calendar = Calendar.getInstance()
-//                val year:String? = binding.etYear.text?.toString()
-//                val month:String? = binding.etMonth.text?.toString()
-//                val day:String? = binding.etDay.text?.toString()
-                try {
-                    Log.d("test", scheduleData.value.toString())
-                    binding.recyclerView.adapter = MyScheduleAdapter(scheduleData.value!!)
-                }catch (e : NullPointerException){
-                    Toast.makeText(this@DeleteActivity, "데이터 없음", Toast.LENGTH_SHORT).show()
+            try {
+                binding.recyclerView.layoutManager = LinearLayoutManager(this)
+                adapter = MyScheduleAdapter(searchedSchedules)
+                binding.recyclerView.adapter = adapter
+            }catch (e : NullPointerException){
+                Toast.makeText(this@DeleteActivity, "adapter error", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
+            for(i:Int in 0 until adapter.itemCount) {
+                val viewHolder = binding.recyclerView.findViewHolderForAdapterPosition(i)
+                if (viewHolder != null && viewHolder is MyScheduleAdapter.ScheduleViewHolder) {
+                    viewHolder.binding.checkbox.isChecked = isChecked
                 }
             }
         }
         binding.deleteBtn.setOnClickListener{
-            //schedule ID로 삭제
-            binding.checkbox
+            adapter.getCheckedItems()
         }
     }
 }
