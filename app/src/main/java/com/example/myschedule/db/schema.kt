@@ -11,3 +11,4 @@ data class Schedule (
     val date: String,
     val times: String
 )
+

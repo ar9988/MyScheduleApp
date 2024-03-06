@@ -26,7 +26,9 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     fun insertSchedule(schedule: Schedule) = viewModelScope.launch {
         repository.insertSchedule(schedule)
     }
-
+    suspend fun deleteAllSchedule(){
+        repository.deleteAllSchedule()
+    }
     suspend fun deleteSchedule(schedule: Schedule){
         repository.deleteSchedule(schedule)
     }

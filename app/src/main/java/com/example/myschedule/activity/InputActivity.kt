@@ -190,7 +190,7 @@ class InputActivity: AppCompatActivity()  {
                                                 0L,
                                                 title,
                                                 content,
-                                                "0",
+                                                "",
                                                 "${startTime}-${endTime}"
                                             )
                                         )

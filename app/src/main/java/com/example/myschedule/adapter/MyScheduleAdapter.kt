@@ -51,5 +51,7 @@ class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
         holder.bind(scheduleList[position])
     }
-
+    fun updateDataAfterDeletion() {
+        this.notifyDataSetChanged()
+    }
 }

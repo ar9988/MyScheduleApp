@@ -15,11 +15,6 @@ class TimePiece(context: Context,attrs: AttributeSet?,private val schedule: Sche
         this.style = Paint.Style.FILL
         this.color = colorCode
     }
-    private val paint2 = Paint().apply {
-        this.style = Paint.Style.STROKE
-        this.strokeWidth = 3F
-        this.color = resources.getColor(R.color.black)
-    }
     private val rect = RectF()
 
     override fun onDraw(canvas: Canvas) {
@@ -31,7 +26,6 @@ class TimePiece(context: Context,attrs: AttributeSet?,private val schedule: Sche
         // 1 minute 0.25F
         rect.set(0F, 0F, binding.watchCenter.width.toFloat(), binding.watchCenter.height.toFloat())
         canvas.drawArc(rect, startAngle.toFloat() - 90F, sweepAngle.toFloat(), true, paint)
-        canvas.drawArc(rect, startAngle.toFloat() - 90F, sweepAngle.toFloat(), true, paint2)
     }
 
 }

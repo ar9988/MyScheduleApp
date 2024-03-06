@@ -27,4 +27,7 @@ class MyPeriodScheduleViewModel(application: Application) : AndroidViewModel(app
     fun insertSchedule(schedule: Schedule) = viewModelScope.launch {
         repository.insertSchedule(schedule)
     }
+    fun getScheduleByDate(date: String): LiveData<List<Schedule>> {
+        return repository.getScheduleByDate(date)
+    }
 }

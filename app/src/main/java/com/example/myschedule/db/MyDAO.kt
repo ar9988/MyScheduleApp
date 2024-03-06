@@ -18,6 +18,8 @@ interface MyDAO {
     @Query("SELECT * FROM Schedule WHERE date = :date")
     fun getScheduleByDate(date: String): LiveData<List<Schedule>>
 
+    @Query("SELECT * FROM Schedule WHERE :date BETWEEN SUBSTR(date, 1, 10) AND SUBSTR(date, 12, 10)")
+    fun getScheduleContainingDate(date: String): LiveData<List<Schedule>>
     @Delete
     suspend fun deleteSchedule(schedule: Schedule)
 

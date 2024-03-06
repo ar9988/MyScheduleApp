@@ -27,6 +27,15 @@ class DayFragment : Fragment(){
     private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
+    private val rainbowColors = intArrayOf(
+        R.color.rainbow1,
+        R.color.rainbow2,
+        R.color.rainbow3,
+        R.color.rainbow4,
+        R.color.rainbow5,
+        R.color.rainbow6,
+        R.color.rainbow7
+    )
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,9 +46,12 @@ class DayFragment : Fragment(){
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         val frame: FrameLayout = binding.watchCenter
         val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()
+        val date = sdf.format(calendar.time)
+        val daySchedule = myViewModel.getScheduleByDate(date)
+        val periodSchedule = myPeriodScheduleViewModel.getScheduleByDate(date)
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
-            for (schedule in dailySchedules) {
-                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,R.color.rainbow7,binding) }
+            for ((i,schedule) in dailySchedules.withIndex()) {
+                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,rainbowColors[(i) % rainbowColors.size],binding) }
                 v?.setOnClickListener(){
                     val alertDialog = AlertDialog.Builder(context)
                         .setTitle("Delete Schedule")
@@ -60,12 +72,10 @@ class DayFragment : Fragment(){
                 frame.addView(v)
             }
         }
-        val date = sdf.format(calendar.time)
-        var daySchedule = myViewModel.getScheduleByDate(date)
         daySchedule.observe(viewLifecycleOwner){schedules ->
             //frameLayout 청소과정이필요할듯. 업데이트때마다 붙이면 무한으로 늘어난다. 어디 배열에넣어서 관리하다 한번에지우고 다시붙히기.
-            for(schedule in schedules){
-                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,R.color.rainbow7,binding) }
+            for((i,schedule) in schedules.withIndex()){
+                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,rainbowColors[(i) % rainbowColors.size],binding) }
                 v?.setOnClickListener(){
                     val alertDialog = AlertDialog.Builder(context)
                         .setTitle("Delete Schedule")
