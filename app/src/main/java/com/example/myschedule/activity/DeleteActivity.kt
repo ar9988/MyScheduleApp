@@ -141,23 +141,45 @@ class DeleteActivity : AppCompatActivity() {
             }
             2 ->{
                 for(schedule in schedules[pos]){
-                    val dates = schedule.date.split("-")
-                    val contents = listOf(schedule.name,schedule.content)
                     var flag = true
-                    for((i,text) in etArray.withIndex()){
-                        if(i<3 && text != ""){
-                            if(text.toInt()<dates[i].toInt()||text.toInt()>dates[i+3].toInt()){
-                                flag=false
-                                break
+                    if(etArray[0]==""||etArray[1]==""||etArray[2]==""){
+                        Toast.makeText(this@DeleteActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        val calendar1 = Calendar.getInstance()
+                        val calendar2 = Calendar.getInstance()
+                        val inputDate = Calendar.getInstance()
+                        val dates = schedule.date.split("-")
+                        val contents = listOf(schedule.name,schedule.content)
+                        calendar1.set(
+                            dates[0].toInt(),
+                            dates[1].toInt(),
+                            dates[2].toInt()
+                        )
+                        calendar2.set(
+                            dates[3].toInt(),
+                            dates[4].toInt(),
+                            dates[5].toInt()
+                        )
+                        inputDate.set(
+                            etArray[0].toInt(),
+                            etArray[1].toInt(),
+                            etArray[2].toInt(),
+                        )
+                        val isInputDateBetweenCalendars = (inputDate.timeInMillis >= calendar1.timeInMillis &&
+                                inputDate.timeInMillis <= calendar2.timeInMillis)
+                        if(isInputDateBetweenCalendars){
+                            for((i,text) in contents.withIndex()){
+                                if(etArray[i+3]!=""){
+                                    if (!text.contains(etArray[i+3])) {
+                                        flag = false
+                                        break
+                                    }
+                                }
                             }
-                        }else if(text!=""){
-                            if(!contents[i-3].contains(text)){
-                                flag=false
-                                break
-                            }
+                            if(flag) searchedSchedules.add(schedule)
                         }
                     }
-                    if(flag) searchedSchedules.add(schedule)
                 }
             }
         }
