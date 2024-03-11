@@ -270,7 +270,7 @@
         <EditText
             android:textStyle="bold"
             android:gravity="bottom|center"
-            android:id="@+id/etHour1"
+            android:id="@+id/etHour2"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -322,7 +322,7 @@
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.Material3.Button.IconButton.Filled"
             app:icon="@drawable/baseline_access_time_filled_24"
-            android:id="@+id/timePicker2"
+            android:id="@+id/timePicker0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -334,7 +334,7 @@
         <EditText
             android:textStyle="bold"
             android:gravity="bottom|center"
-            android:id="@+id/etHour2"
+            android:id="@+id/etHour1"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -342,8 +342,8 @@
             android:inputType="number"
             android:maxLength="2"
             android:minHeight="48dp"
-            app:layout_constraintStart_toEndOf="@+id/timePicker2"
-            app:layout_constraintBottom_toBottomOf="@+id/timePicker2"
+            app:layout_constraintStart_toEndOf="@+id/timePicker0"
+            app:layout_constraintBottom_toBottomOf="@+id/timePicker0"
             tools:ignore="SpeakableTextPresentCheck"/>
 
         <TextView

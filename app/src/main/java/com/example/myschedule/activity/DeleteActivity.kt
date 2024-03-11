@@ -100,14 +100,14 @@ class DeleteActivity : AppCompatActivity() {
         etArray.add( binding.etDay.text.toString())
         etArray.add( binding.etTitle.text.toString())
         etArray.add( binding.etContent.text.toString())
-        if(etArray[1]!="") etArray[1] = (etArray[1].toInt()-1).toString()
+        if(etArray[1].isNotEmpty()) etArray[1] = (etArray[1].toInt()-1).toString()
         when (pos){
             0 ->{
                 for(schedule in schedules[pos]){
                     val contents = listOf(schedule.name,schedule.content)
                     var flag = true
                     for((i,text) in contents.withIndex()){
-                        if(etArray[i+3]!=""){
+                        if(etArray[i+3].isNotEmpty()){
                             if (!text.contains(etArray[i+3])) {
                                 flag = false
                                 break
@@ -124,12 +124,12 @@ class DeleteActivity : AppCompatActivity() {
                     val data = dates + contents
                     var flag = true
                     for((i,text) in etArray.withIndex()){
-                        if(i<3 && text != ""){
+                        if(i<3 && text.isNotEmpty()){
                             if(data[i]!=text){
                                 flag=false
                                 break
                             }
-                        }else if(text!=""){
+                        }else if(text.isNotEmpty()){
                             if(!data[i].contains(text)){
                                 flag=false
                                 break
@@ -142,7 +142,7 @@ class DeleteActivity : AppCompatActivity() {
             2 ->{
                 for(schedule in schedules[pos]){
                     var flag = true
-                    if(etArray[0]==""||etArray[1]==""||etArray[2]==""){
+                    if(etArray[0].isEmpty()||etArray[1].isEmpty()||etArray[2].isEmpty()){
                         Toast.makeText(this@DeleteActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
                     }
                     else{
@@ -170,7 +170,7 @@ class DeleteActivity : AppCompatActivity() {
                                 inputDate.timeInMillis <= calendar2.timeInMillis)
                         if(isInputDateBetweenCalendars){
                             for((i,text) in contents.withIndex()){
-                                if(etArray[i+3]!=""){
+                                if(etArray[i+3].isNotEmpty()){
                                     if (!text.contains(etArray[i+3])) {
                                         flag = false
                                         break

@@ -1,11 +1,13 @@
 package com.example.myschedule.fragment
 
 import MyPeriodScheduleViewModel
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -19,6 +21,7 @@ import com.example.myschedule.viewModel.MyViewModel
 import com.example.myschedule.viewModel.MyDailyViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.atan2
 
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
@@ -36,6 +39,7 @@ class DayFragment : Fragment(){
         R.color.rainbow6,
         R.color.rainbow7
     )
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,7 +56,7 @@ class DayFragment : Fragment(){
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
             for ((i,schedule) in dailySchedules.withIndex()) {
                 val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,rainbowColors[(i) % rainbowColors.size],binding) }
-                v?.setOnClickListener(){
+                v?.setOnClickListener {
                     val alertDialog = AlertDialog.Builder(context)
                         .setTitle("Delete Schedule")
                         .setMessage("Are you sure you want to delete this schedule?")
@@ -76,7 +80,7 @@ class DayFragment : Fragment(){
             //frameLayout 청소과정이필요할듯. 업데이트때마다 붙이면 무한으로 늘어난다. 어디 배열에넣어서 관리하다 한번에지우고 다시붙히기.
             for((i,schedule) in schedules.withIndex()){
                 val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,rainbowColors[(i) % rainbowColors.size],binding) }
-                v?.setOnClickListener(){
+                v?.setOnClickListener{
                     val alertDialog = AlertDialog.Builder(context)
                         .setTitle("Delete Schedule")
                         .setMessage("Are you sure you want to delete this schedule?")
@@ -96,6 +100,28 @@ class DayFragment : Fragment(){
                 frame.addView(v)
             }
         }
+
+        frame.setOnTouchListener{ _ , event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val centerX = frame.width / 2f
+                val centerY = frame.height / 2f
+                val clickX = event.x
+                val clickY = event.y
+
+                val dx = clickX - centerX
+                val dy = clickY - centerY
+
+                var angle = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
+                if (angle < 0) {
+                    angle += 360f
+                }
+                Log.d("TouchListener", "Angle: $angle degrees")
+                true
+            }else{
+                false
+            }
+        }
+
         return binding.root
     }
 

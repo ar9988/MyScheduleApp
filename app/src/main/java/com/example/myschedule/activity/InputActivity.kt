@@ -78,15 +78,15 @@ class InputActivity: AppCompatActivity()  {
             }
             timePicker1.setOnClickListener {
                 val timeSetListener = TimePickerDialog.OnTimeSetListener{_,hourOfDay,minute ->
-                    binding.etHour1.setText("$hourOfDay")
-                    binding.etMinute1.setText("$minute")
+                    binding.etHour2.setText("$hourOfDay")
+                    binding.etMinute2.setText("$minute")
                 }
                 TimePickerDialog(this@InputActivity,16973935,timeSetListener,0,0,true).show()
             }
-            timePicker2.setOnClickListener {
+            timePicker0.setOnClickListener {
                 val timeSetListener = TimePickerDialog.OnTimeSetListener{_,hourOfDay,minute ->
-                    binding.etHour2.setText("$hourOfDay")
-                    binding.etMinute2.setText("$minute")
+                    binding.etHour1.setText("$hourOfDay")
+                    binding.etMinute1.setText("$minute")
                 }
                 TimePickerDialog(this@InputActivity,16973935,timeSetListener,0,0,true).show()
             }
