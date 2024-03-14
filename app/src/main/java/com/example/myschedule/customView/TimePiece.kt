@@ -17,13 +17,18 @@ import kotlin.properties.Delegates
 class TimePiece(
     context: Context,
     attrs: AttributeSet?,
-    private val schedule: Schedule,
+    val schedule: Schedule,
     private val colorCode: Int,
     private val binding: DayLayoutBinding
 ) : View(context, attrs) {
     private val paint = Paint().apply {
         style = Paint.Style.FILL
         color = colorCode
+    }
+    private val paint2 = Paint().apply {
+        style = Paint.Style.STROKE
+        color = Color.BLACK
+        strokeWidth = 5f
     }
     private val rect = RectF()
     private val path = Path()
@@ -45,15 +50,23 @@ class TimePiece(
         val startTime = (times[0].toFloat() * 60 + times[1].toFloat()) * 0.25
         val endTime = (times[2].toFloat() * 60 + times[3].toFloat()) * 0.25
         val sweepAngle = if (endTime > startTime) endTime - startTime else (24F * 60 * 0.25 - startTime) + endTime
-        startAngle = startTime.toFloat()
+        startAngle = startTime.toFloat()-90F
+        if(startAngle<0F){
+            startAngle += 360F
+        }
         endAngle = (startAngle+sweepAngle).toFloat()
+        if(endAngle>360F){
+            endAngle -= 360F
+        }
         rect.set(
             0F,
             0F,
             binding.watchCenter.width.toFloat(),
             binding.watchCenter.height.toFloat()
         )
+        Log.d("angles","$startAngle, $endAngle")
         canvas.drawArc(rect, ((startTime - 90F).toFloat()), sweepAngle.toFloat(), true, paint)
+        canvas.drawArc(rect, ((startTime - 90F).toFloat()), sweepAngle.toFloat(), true, paint2)
 
         path.reset()
         path.addCircle(
@@ -74,4 +87,5 @@ class TimePiece(
     fun getAngles(): Pair<Float, Float> {
         return Pair(startAngle, endAngle)
     }
+
 }
