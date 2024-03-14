@@ -21,7 +21,6 @@ import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.viewModel.MyViewModel
 import com.example.myschedule.viewModel.MyDailyViewModel
 import kotlinx.coroutines.launch
-import java.sql.Time
 import java.util.Calendar
 import kotlin.math.atan2
 
@@ -59,7 +58,7 @@ class DayFragment : Fragment(){
         var colorIndex = 0
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
             removeTimePieces(0,frame)
-            for ((i,schedule) in dailySchedules.withIndex()) {
+            for (schedule in dailySchedules) {
                 val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
                 val color = ContextCompat.getColor(requireContext(), colorResourceId)
                 colorIndex++
@@ -70,7 +69,7 @@ class DayFragment : Fragment(){
         }
         daySchedule.observe(viewLifecycleOwner){schedules ->
             removeTimePieces(1,frame)
-            for((i,schedule) in schedules.withIndex()){
+            for(schedule in schedules){
                 val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
                 val color = ContextCompat.getColor(requireContext(), colorResourceId)
                 colorIndex++
@@ -81,7 +80,7 @@ class DayFragment : Fragment(){
         }
         periodScheduleLiveData.observe(viewLifecycleOwner){schedules ->
             removeTimePieces(2,frame)
-            for((i,schedule) in schedules.withIndex()){
+            for(schedule in schedules){
                 val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
                 val color = ContextCompat.getColor(requireContext(), colorResourceId)
                 colorIndex++
@@ -127,11 +126,11 @@ class DayFragment : Fragment(){
                     val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
                     for((index, list) in timePieceLists.withIndex()){
                         for(item in list){
-                            var angles = item.getAngles()
+                            val angles = item.getAngles()
                             val startAngle = angles.first
-                            var endAngle = angles.second
+                            val endAngle = angles.second
                             if(endAngle<startAngle){
-                                if(angle>startAngle&&angle>endAngle){
+                                if(angle>startAngle){
                                     selectedItems.add(Pair(item, index))
                                 }
                                 else if(angle<startAngle&&angle<endAngle){
@@ -144,7 +143,7 @@ class DayFragment : Fragment(){
                         }
                     }
                     if(selectedItems.size!=1){
-
+                        //하나 이상일때 처리코드
                     }
                     else{
                         val selectedItem = selectedItems[0]
@@ -154,7 +153,7 @@ class DayFragment : Fragment(){
                         val startTime = times[0]+"시"+times[1]+"분"
                         val endTime = times[2]+"시"+times[3]+"분"
                         AlertDialog.Builder(requireContext())
-                            .setTitle("$itemName")
+                            .setTitle(itemName)
                             .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
                             .setPositiveButton("Yes") { dialog, _ ->
                                 frame.removeView(selectedItem.first)

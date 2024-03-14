@@ -8,11 +8,9 @@ import android.graphics.Paint
 import android.graphics.PathMeasure
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
-import kotlin.properties.Delegates
 
 class TimePiece(
     context: Context,
@@ -64,7 +62,6 @@ class TimePiece(
             binding.watchCenter.width.toFloat(),
             binding.watchCenter.height.toFloat()
         )
-        Log.d("angles","$startAngle, $endAngle")
         canvas.drawArc(rect, ((startTime - 90F).toFloat()), sweepAngle.toFloat(), true, paint)
         canvas.drawArc(rect, ((startTime - 90F).toFloat()), sweepAngle.toFloat(), true, paint2)
 

@@ -1,5 +1,6 @@
 package com.example.myschedule.fragment
 
+import MyPeriodScheduleViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ class MonthFragment :Fragment(){
     private lateinit var binding : MonthLayoutBinding
     private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
+    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
