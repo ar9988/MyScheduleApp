@@ -18,11 +18,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
 import com.example.myschedule.customView.TimePiece
 import com.example.myschedule.databinding.DayLayoutBinding
+import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
 import com.example.myschedule.viewModel.MyDailyViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.atan2
+import kotlin.math.log
 
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
@@ -54,7 +56,7 @@ class DayFragment : Fragment(){
         val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()
         val date = sdf.format(calendar.time)
         val daySchedule = myViewModel.getScheduleByDate(date)
-        val periodScheduleLiveData = myPeriodScheduleViewModel.getScheduleByDate(date)
+        val periodScheduleLiveData = myPeriodScheduleViewModel.getAllSchedules()
         var colorIndex = 0
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
             removeTimePieces(0,frame)
@@ -79,8 +81,9 @@ class DayFragment : Fragment(){
             }
         }
         periodScheduleLiveData.observe(viewLifecycleOwner){schedules ->
+            val searchedSchedule = search(schedules)
             removeTimePieces(2,frame)
-            for(schedule in schedules){
+            for(schedule in searchedSchedule){
                 val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
                 val color = ContextCompat.getColor(requireContext(), colorResourceId)
                 colorIndex++
@@ -103,7 +106,6 @@ class DayFragment : Fragment(){
                 if (angle < 0) {
                     angle += 360f
                 }
-                Log.d("TouchListener", "Angle: $angle degrees")
                 true
             }else{
                 false
@@ -122,7 +124,6 @@ class DayFragment : Fragment(){
                     if (angle < 0) {
                         angle += 360f
                     }
-                    Log.d("TouchListener", "Angle: $angle degrees")
                     val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
                     for((index, list) in timePieceLists.withIndex()){
                         for(item in list){
@@ -142,10 +143,49 @@ class DayFragment : Fragment(){
                             }
                         }
                     }
-                    if(selectedItems.size!=1){
-                        //하나 이상일때 처리코드
+                    if(selectedItems.size>1){
+                        var index = 0
+                        for((i,item) in selectedItems.withIndex()){
+                            if(findNearestAngle(item.first)<findNearestAngle(selectedItems[index].first)){
+                                index = i
+                            }
+                        }
+                        val selectedItem = selectedItems[index]
+                        val itemName = selectedItem.first.schedule.name
+                        val itemContent = selectedItem.first.schedule.content
+                        val times = selectedItem.first.schedule.times.split("-")
+                        val startTime = times[0]+"시"+times[1]+"분"
+                        val endTime = times[2]+"시"+times[3]+"분"
+                        AlertDialog.Builder(requireContext())
+                            .setTitle(itemName)
+                            .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
+                            .setPositiveButton("Yes") { dialog, _ ->
+                                frame.removeView(selectedItem.first)
+                                when (selectedItem.second){
+                                    0->{
+                                        myDailyViewModel.viewModelScope.launch{
+                                            myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
+                                        }
+                                    }
+                                    1->{
+                                        myViewModel.viewModelScope.launch {
+                                            myViewModel.deleteSchedule(selectedItem.first.schedule)
+                                        }
+                                    }
+                                    2->{
+                                        myPeriodScheduleViewModel.viewModelScope.launch {
+                                            myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
+                                        }
+                                    }
+                                }
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton("No") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
                     }
-                    else{
+                    else if(selectedItems.size==1){
                         val selectedItem = selectedItems[0]
                         val itemName = selectedItem.first.schedule.name
                         val itemContent = selectedItem.first.schedule.content
@@ -194,12 +234,53 @@ class DayFragment : Fragment(){
         }
         return binding.root
     }
+
+    private fun search(schedules: List<Schedule>?): MutableList<Schedule> {
+        var searchedSchedules: MutableList<Schedule> = mutableListOf()
+        if (schedules != null) {
+            for(schedule in schedules) {
+                val calendar1 = Calendar.getInstance()
+                val calendar2 = Calendar.getInstance()
+                val date = Calendar.getInstance()
+                val dates = schedule.date.split("-")
+                calendar1.set(
+                    dates[0].toInt(),
+                    dates[1].toInt()-1,
+                    dates[2].toInt()
+                )
+                calendar2.set(
+                    dates[3].toInt(),
+                    dates[4].toInt()-1,
+                    dates[5].toInt()
+                )
+                val isInputDateBetweenCalendars = (date.timeInMillis >= calendar1.timeInMillis &&
+                        date.timeInMillis <= calendar2.timeInMillis)
+                if(isInputDateBetweenCalendars){
+                    searchedSchedules.add(schedule)
+                }
+            }
+        }
+        return searchedSchedules
+    }
+
     private fun removeTimePieces(i: Int, frame: FrameLayout) {
         for (timePiece in timePieceLists[i]) {
             frame.removeView(timePiece)
         }
         timePieceLists[i].clear()
     }
-
+    private fun findNearestAngle(item: TimePiece):Float{
+        val angles = item.getAngles()
+        val gap = if(angles.first<angles.second) {
+            (angles.first+angles.second)/2
+        } else{
+            val tmp =(angles.first+angles.second+360)/2
+            if(tmp>360){
+                tmp-360
+            }
+            else tmp
+        }
+        return gap
+    }
 }
 

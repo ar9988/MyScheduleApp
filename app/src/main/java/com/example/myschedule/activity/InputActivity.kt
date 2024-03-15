@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -50,7 +51,7 @@ class InputActivity: AppCompatActivity()  {
 
     private fun setupListeners() {
         binding.apply {
-            datePicker.setOnClickListener { datePicker.setOnClickListener {
+            datePicker.setOnClickListener {
                 val calendar = Calendar.getInstance()
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
@@ -62,7 +63,7 @@ class InputActivity: AppCompatActivity()  {
                         binding.etDay.setText("$day")
                     }
                 }, year, month, day).show()
-            } }
+            }
             datePicker2.setOnClickListener {
                 val calendar = Calendar.getInstance()
                 val year = calendar.get(Calendar.YEAR)
@@ -157,7 +158,6 @@ class InputActivity: AppCompatActivity()  {
                                 }
                             }
                         }
-
                     }
                     1->{
                         val hour = binding.etHour1.text.toString()

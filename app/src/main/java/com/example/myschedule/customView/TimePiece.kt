@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.PathMeasure
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
@@ -44,6 +45,7 @@ class TimePiece(
     private var endAngle =0F
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        Log.d("name",schedule.name+" "+schedule.times)
         val times = schedule.times.split("-")
         val startTime = (times[0].toFloat() * 60 + times[1].toFloat()) * 0.25
         val endTime = (times[2].toFloat() * 60 + times[3].toFloat()) * 0.25

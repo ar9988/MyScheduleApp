@@ -62,7 +62,7 @@ class DeleteActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = MyScheduleAdapter(emptyList())
         binding.recyclerView.adapter = adapter
-        binding.DatePicker.setOnClickListener { binding.DatePicker.setOnClickListener {
+        binding.DatePicker.setOnClickListener {
             val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
@@ -74,7 +74,7 @@ class DeleteActivity : AppCompatActivity() {
                     binding.etDay.setText("$day")
                 }
             }, year, month, day).show()
-        } }
+        }
         binding.SearchBtn.setOnClickListener{
             search()
         }
@@ -100,7 +100,6 @@ class DeleteActivity : AppCompatActivity() {
         etArray.add( binding.etDay.text.toString())
         etArray.add( binding.etTitle.text.toString())
         etArray.add( binding.etContent.text.toString())
-        if(etArray[1].isNotEmpty()) etArray[1] = (etArray[1].toInt()-1).toString()
         when (pos){
             0 ->{
                 for(schedule in schedules[pos]){
@@ -119,7 +118,7 @@ class DeleteActivity : AppCompatActivity() {
             }
             1 ->{
                 for(schedule in schedules[pos]){
-                    val dates = schedule.date.split("-")
+                    val dates = schedule.date.split("-").map { it.toIntOrNull()?.toString() ?: it }
                     val contents = listOf(schedule.name,schedule.content)
                     val data = dates + contents
                     var flag = true
@@ -142,7 +141,10 @@ class DeleteActivity : AppCompatActivity() {
             2 ->{
                 for(schedule in schedules[pos]){
                     var flag = true
-                    if(etArray[0].isEmpty()||etArray[1].isEmpty()||etArray[2].isEmpty()){
+                    if(etArray[0].isEmpty()&&etArray[1].isEmpty()&&etArray[2].isEmpty()){
+                        searchedSchedules.add(schedule)
+                    }
+                    else if(etArray[0].isEmpty()||etArray[1].isEmpty()||etArray[2].isEmpty()){
                         Toast.makeText(this@DeleteActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
                     }
                     else{
