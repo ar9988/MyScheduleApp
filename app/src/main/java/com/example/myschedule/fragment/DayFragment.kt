@@ -23,6 +23,7 @@ import com.example.myschedule.viewModel.MyViewModel
 import com.example.myschedule.viewModel.MyDailyViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.log
 
@@ -34,6 +35,10 @@ class DayFragment : Fragment(){
     private val timePieceLists: MutableList<MutableList<TimePiece>> = MutableList(3) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
+    private val rotationSensitivity = 0.03f
+    private var prevX = 0f
+    private var prevY = 0f
+    private var dragFlag = false
     private val rainbowColors = intArrayOf(
         R.color.rainbow1,
         R.color.rainbow2,
@@ -53,6 +58,7 @@ class DayFragment : Fragment(){
         myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         val frame: FrameLayout = binding.watchCenter
+        val touchScreen: FrameLayout = binding.touchScreen
         val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()
         val date = sdf.format(calendar.time)
         val daySchedule = myViewModel.getScheduleByDate(date)
@@ -92,141 +98,31 @@ class DayFragment : Fragment(){
                 v?.let { timePieceLists[2].add(it) }
             }
         }
-        frame.setOnTouchListener{ _ , event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                val centerX = frame.width / 2f
-                val centerY = frame.height / 2f
-                val clickX = event.x
-                val clickY = event.y
-
-                val dx = clickX - centerX
-                val dy = clickY - centerY
-
-                var angle = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
-                if (angle < 0) {
-                    angle += 360f
-                }
-                true
-            }else{
-                false
-            }
-        }
-        binding.watchCenter.setOnTouchListener{_, event ->
+        touchScreen.setOnTouchListener{_, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    val centerX = frame.width / 2f
-                    val centerY = frame.height / 2f
-                    val clickX = event.x
-                    val clickY = event.y
-                    val dx = clickX - centerX
-                    val dy = clickY - centerY
-                    var angle = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
-                    if (angle < 0) {
-                        angle += 360f
-                    }
-                    val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
-                    for((index, list) in timePieceLists.withIndex()){
-                        for(item in list){
-                            val angles = item.getAngles()
-                            val startAngle = angles.first
-                            val endAngle = angles.second
-                            if(endAngle<startAngle){
-                                if(angle>startAngle){
-                                    selectedItems.add(Pair(item, index))
-                                }
-                                else if(angle<startAngle&&angle<endAngle){
-                                    selectedItems.add(Pair(item, index))
-                                }
-                            }
-                            else if (angle in startAngle..endAngle) {
-                                selectedItems.add(Pair(item, index))
-                            }
-                        }
-                    }
-                    if(selectedItems.size>1){
-                        var index = 0
-                        for((i,item) in selectedItems.withIndex()){
-                            if(findNearestAngle(item.first)<findNearestAngle(selectedItems[index].first)){
-                                index = i
-                            }
-                        }
-                        val selectedItem = selectedItems[index]
-                        val itemName = selectedItem.first.schedule.name
-                        val itemContent = selectedItem.first.schedule.content
-                        val times = selectedItem.first.schedule.times.split("-")
-                        val startTime = times[0]+"시"+times[1]+"분"
-                        val endTime = times[2]+"시"+times[3]+"분"
-                        AlertDialog.Builder(requireContext())
-                            .setTitle(itemName)
-                            .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
-                            .setPositiveButton("Yes") { dialog, _ ->
-                                frame.removeView(selectedItem.first)
-                                when (selectedItem.second){
-                                    0->{
-                                        myDailyViewModel.viewModelScope.launch{
-                                            myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
-                                        }
-                                    }
-                                    1->{
-                                        myViewModel.viewModelScope.launch {
-                                            myViewModel.deleteSchedule(selectedItem.first.schedule)
-                                        }
-                                    }
-                                    2->{
-                                        myPeriodScheduleViewModel.viewModelScope.launch {
-                                            myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
-                                        }
-                                    }
-                                }
-                                dialog.dismiss()
-                            }
-                            .setNegativeButton("No") { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
-                    }
-                    else if(selectedItems.size==1){
-                        val selectedItem = selectedItems[0]
-                        val itemName = selectedItem.first.schedule.name
-                        val itemContent = selectedItem.first.schedule.content
-                        val times = selectedItem.first.schedule.times.split("-")
-                        val startTime = times[0]+"시"+times[1]+"분"
-                        val endTime = times[2]+"시"+times[3]+"분"
-                        AlertDialog.Builder(requireContext())
-                            .setTitle(itemName)
-                            .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
-                            .setPositiveButton("Yes") { dialog, _ ->
-                                frame.removeView(selectedItem.first)
-                                when (selectedItem.second){
-                                    0->{
-                                        myDailyViewModel.viewModelScope.launch{
-                                            myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
-                                        }
-                                    }
-                                    1->{
-                                        myViewModel.viewModelScope.launch {
-                                            myViewModel.deleteSchedule(selectedItem.first.schedule)
-                                        }
-                                    }
-                                    2->{
-                                        myPeriodScheduleViewModel.viewModelScope.launch {
-                                            myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
-                                        }
-                                    }
-                                }
-                                dialog.dismiss()
-                            }
-                            .setNegativeButton("No") { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
-                    }
+                    prevX = event.x
+                    prevY = event.y
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    val deltaX = event.x - prevX
+                    val deltaY = event.y - prevY
+                    Log.d("move","$deltaX - $deltaY")
+                    if(deltaX<1&&deltaY<1){
+                        dragFlag=false
+                    }
+                    else{
+                        val rotation = Math.toDegrees(atan2(deltaY.toDouble(), deltaX.toDouble())).toFloat() * rotationSensitivity
+                        frame.rotation += rotation
+                        dragFlag=true
+                    }
+                    prevX = event.x
+                    prevY = event.y
                     true
                 }
                 MotionEvent.ACTION_UP -> {
+                    if(!dragFlag){clickEvent(binding,event)}
                     true
                 }
                 else -> false
@@ -236,7 +132,7 @@ class DayFragment : Fragment(){
     }
 
     private fun search(schedules: List<Schedule>?): MutableList<Schedule> {
-        var searchedSchedules: MutableList<Schedule> = mutableListOf()
+        val searchedSchedules: MutableList<Schedule> = mutableListOf()
         if (schedules != null) {
             for(schedule in schedules) {
                 val calendar1 = Calendar.getInstance()
@@ -269,18 +165,121 @@ class DayFragment : Fragment(){
         }
         timePieceLists[i].clear()
     }
-    private fun findNearestAngle(item: TimePiece):Float{
-        val angles = item.getAngles()
-        val gap = if(angles.first<angles.second) {
-            (angles.first+angles.second)/2
-        } else{
-            val tmp =(angles.first+angles.second+360)/2
-            if(tmp>360){
-                tmp-360
-            }
-            else tmp
+    private fun clickEvent(binding: DayLayoutBinding,event: MotionEvent){
+        val touchScreen = binding.touchScreen
+        val frame = binding.watchCenter
+        val centerX = touchScreen.width / 2f
+        val centerY = touchScreen.height / 2f
+        val clickX = event.x
+        val clickY = event.y
+        val dx = clickX - centerX
+        val dy = clickY - centerY
+        var angle = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
+        if (angle < 0) {
+            angle += 360f
         }
-        return gap
+        val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
+        for((index, list) in timePieceLists.withIndex()){
+            for(item in list){
+                val angles = item.getAngles()
+                val startAngle = angles.first
+                val endAngle = angles.second
+                if(endAngle<startAngle){
+                    if(angle>startAngle){
+                        selectedItems.add(Pair(item, index))
+                    }
+                    else if(angle<startAngle&&angle<endAngle){
+                        selectedItems.add(Pair(item, index))
+                    }
+                }
+                else if (angle in startAngle..endAngle) {
+                    selectedItems.add(Pair(item, index))
+                }
+            }
+        }
+        if(selectedItems.size>1){
+            var index = 0
+            for((i,item) in selectedItems.withIndex()){
+                if(findNearestAngle(item.first,selectedItems[index].first,angle)){
+                    index = i
+                }
+            }
+            val selectedItem = selectedItems[index]
+            val itemName = selectedItem.first.schedule.name
+            val itemContent = selectedItem.first.schedule.content
+            val times = selectedItem.first.schedule.times.split("-")
+            val startTime = times[0]+"시"+times[1]+"분"
+            val endTime = times[2]+"시"+times[3]+"분"
+            AlertDialog.Builder(requireContext())
+                .setTitle(itemName)
+                .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    frame.removeView(selectedItem.first)
+                    when (selectedItem.second){
+                        0->{
+                            myDailyViewModel.viewModelScope.launch{
+                                myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
+                            }
+                        }
+                        1->{
+                            myViewModel.viewModelScope.launch {
+                                myViewModel.deleteSchedule(selectedItem.first.schedule)
+                            }
+                        }
+                        2->{
+                            myPeriodScheduleViewModel.viewModelScope.launch {
+                                myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
+                            }
+                        }
+                    }
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+        else if(selectedItems.size==1){
+            val selectedItem = selectedItems[0]
+            val itemName = selectedItem.first.schedule.name
+            val itemContent = selectedItem.first.schedule.content
+            val times = selectedItem.first.schedule.times.split("-")
+            val startTime = times[0]+"시"+times[1]+"분"
+            val endTime = times[2]+"시"+times[3]+"분"
+            AlertDialog.Builder(requireContext())
+                .setTitle(itemName)
+                .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    frame.removeView(selectedItem.first)
+                    when (selectedItem.second){
+                        0->{
+                            myDailyViewModel.viewModelScope.launch{
+                                myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
+                            }
+                        }
+                        1->{
+                            myViewModel.viewModelScope.launch {
+                                myViewModel.deleteSchedule(selectedItem.first.schedule)
+                            }
+                        }
+                        2->{
+                            myPeriodScheduleViewModel.viewModelScope.launch {
+                                myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
+                            }
+                        }
+                    }
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+    private fun findNearestAngle(item: TimePiece, item2: TimePiece,angle:Float):Boolean{
+        val a = abs(item.getCentralAngle() - angle)
+        val b = abs(item2.getCentralAngle() - angle)
+        return a>b
     }
 }
 

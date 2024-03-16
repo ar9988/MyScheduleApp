@@ -12,6 +12,8 @@ import android.util.Log
 import android.view.View
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
+import kotlin.math.cos
+import kotlin.math.sin
 
 class TimePiece(
     context: Context,
@@ -43,9 +45,9 @@ class TimePiece(
     private val pathMeasure = PathMeasure()
     private var startAngle = 0F
     private var endAngle =0F
+    private var centralAngle= 0F
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.d("name",schedule.name+" "+schedule.times)
         val times = schedule.times.split("-")
         val startTime = (times[0].toFloat() * 60 + times[1].toFloat()) * 0.25
         val endTime = (times[2].toFloat() * 60 + times[3].toFloat()) * 0.25
@@ -58,33 +60,45 @@ class TimePiece(
         if(endAngle>360F){
             endAngle -= 360F
         }
+        centralAngle = (startAngle+sweepAngle/2).toFloat()
+        if(centralAngle>360F){
+            centralAngle -= 360F
+        }
+        val rectSize = resources.displayMetrics.density * 300
+        val rectLeft = (binding.watchCenter.width - rectSize) / 2
+        val rectTop = (binding.watchCenter.height - rectSize) / 2
         rect.set(
-            0F,
-            0F,
-            binding.watchCenter.width.toFloat(),
-            binding.watchCenter.height.toFloat()
+            rectLeft,
+            rectTop,
+            rectLeft + rectSize,
+            rectTop + rectSize
         )
         canvas.drawArc(rect, ((startTime - 90F).toFloat()), sweepAngle.toFloat(), true, paint)
         canvas.drawArc(rect, ((startTime - 90F).toFloat()), sweepAngle.toFloat(), true, paint2)
 
+        val radius = resources.displayMetrics.density * 300/2
+        val startX = (binding.watchCenter.width / 2).toFloat()
+        val startY = (binding.watchCenter.height / 2).toFloat()
+        val endX = (startX + radius * cos(Math.toRadians(centralAngle.toDouble()))).toFloat()
+        val endY = (startY + radius * sin(Math.toRadians(centralAngle.toDouble()))).toFloat()
         path.reset()
-        path.addCircle(
-            (binding.watchCenter.width / 2).toFloat(),
-            (binding.watchCenter.height / 2).toFloat(),
-            (binding.watchCenter.width / 2.5).toFloat(),
-            Path.Direction.CW
-        )
-        canvas.drawPath(path, pathPaint)
-
+        path.moveTo(startX, startY)
+        path.lineTo(endX, endY)
         pathMeasure.setPath(path, false)
         val len = pathMeasure.length
         val textLength = textPaint.measureText(schedule.name)
-        val hOffset = len * ((startTime + sweepAngle / 2) / 360F) - len / 4 -textLength/2
-        canvas.drawTextOnPath(schedule.name, path, hOffset.toFloat(), 0F, textPaint)
+        val textHeight = textPaint.fontMetrics.bottom - textPaint.fontMetrics.top
+        val vOffset = (textHeight / 2) - (textPaint.fontMetrics.bottom)
+        val hOffset = len * 0.6 - textLength*0.5
+        canvas.drawPath(path, pathPaint)
+        canvas.drawTextOnPath(schedule.name, path, hOffset.toFloat(), vOffset, textPaint)
     }
 
     fun getAngles(): Pair<Float, Float> {
         return Pair(startAngle, endAngle)
+    }
+    fun getCentralAngle(): Float{
+        return centralAngle
     }
 
 }
