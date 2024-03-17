@@ -5,12 +5,13 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +26,6 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.atan2
-import kotlin.math.log
 
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
@@ -35,10 +35,18 @@ class DayFragment : Fragment(){
     private val timePieceLists: MutableList<MutableList<TimePiece>> = MutableList(3) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
-    private val rotationSensitivity = 0.03f
     private var prevX = 0f
     private var prevY = 0f
     private var dragFlag = false
+    private var rotationAngle = 0f
+    private var clockTimeIds = arrayOf(
+        R.id.clockTime_0, R.id.clockTime_1, R.id.clockTime_2, R.id.clockTime_3,
+        R.id.clockTime_4, R.id.clockTime_5, R.id.clockTime_6, R.id.clockTime_7,
+        R.id.clockTime_8, R.id.clockTime_9, R.id.clockTime_10, R.id.clockTime_11,
+        R.id.clockTime_12, R.id.clockTime_13, R.id.clockTime_14, R.id.clockTime_15,
+        R.id.clockTime_16, R.id.clockTime_17, R.id.clockTime_18, R.id.clockTime_19,
+        R.id.clockTime_20, R.id.clockTime_21, R.id.clockTime_22, R.id.clockTime_23
+    )
     private val rainbowColors = intArrayOf(
         R.color.rainbow1,
         R.color.rainbow2,
@@ -64,6 +72,7 @@ class DayFragment : Fragment(){
         val daySchedule = myViewModel.getScheduleByDate(date)
         val periodScheduleLiveData = myPeriodScheduleViewModel.getAllSchedules()
         var colorIndex = 0
+        val clock: ConstraintLayout = binding.clockLayout
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
             removeTimePieces(0,frame)
             for (schedule in dailySchedules) {
@@ -98,36 +107,61 @@ class DayFragment : Fragment(){
                 v?.let { timePieceLists[2].add(it) }
             }
         }
-        touchScreen.setOnTouchListener{_, event ->
+        touchScreen.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     prevX = event.x
                     prevY = event.y
+                    dragFlag = false
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    val deltaX = event.x - prevX
-                    val deltaY = event.y - prevY
-                    Log.d("move","$deltaX - $deltaY")
-                    if(deltaX<1&&deltaY<1){
-                        dragFlag=false
+                    val centerX = touchScreen.width / 2f
+                    val centerY = touchScreen.height / 2f
+                    val touchX = event.x
+                    val touchY = event.y
+
+                    val startAngle = Math.toDegrees(atan2(prevY - centerY, prevX - centerX).toDouble()).toFloat()
+                    val endAngle = Math.toDegrees(atan2(touchY - centerY, touchX - centerX).toDouble()).toFloat()
+
+                    val deltaAngle = endAngle - startAngle
+                    val currentRotation = frame.rotation
+
+                    if (abs(deltaAngle) >= 1) {
+                        dragFlag = true
                     }
-                    else{
-                        val rotation = Math.toDegrees(atan2(deltaY.toDouble(), deltaX.toDouble())).toFloat() * rotationSensitivity
-                        frame.rotation += rotation
-                        dragFlag=true
+                    if (dragFlag) {
+                        var rotation = deltaAngle
+                        if (abs(deltaAngle) > 180) {
+                            rotation = if (deltaAngle > 0) {
+                                deltaAngle - 360
+                            } else {
+                                deltaAngle + 360
+                            }
+                        }
+                        frame.rotation = currentRotation + rotation
+                        clock.rotation = currentRotation + rotation
+                        rotationAngle += rotation
+                        rotationAngle = normalizeAngle(rotationAngle)
+                        for(item in clockTimeIds){
+                            val textView: TextView? = view?.findViewById(item)
+                            textView!!.rotation-=rotation
+                        }
                     }
-                    prevX = event.x
-                    prevY = event.y
+                    prevX = touchX
+                    prevY = touchY
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    if(!dragFlag){clickEvent(binding,event)}
+                    if (!dragFlag) {
+                        clickEvent(binding, event)
+                    }
                     true
                 }
                 else -> false
             }
         }
+
         return binding.root
     }
 
@@ -178,12 +212,13 @@ class DayFragment : Fragment(){
         if (angle < 0) {
             angle += 360f
         }
+        angle = normalizeAngle(angle+rotationAngle)
         val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
         for((index, list) in timePieceLists.withIndex()){
             for(item in list){
                 val angles = item.getAngles()
-                val startAngle = angles.first
-                val endAngle = angles.second
+                val startAngle = angles.first//normalizeAngle(angles.first+rotationAngle)
+                val endAngle = angles.second//normalizeAngle(angles.second+rotationAngle)
                 if(endAngle<startAngle){
                     if(angle>startAngle){
                         selectedItems.add(Pair(item, index))
@@ -280,6 +315,16 @@ class DayFragment : Fragment(){
         val a = abs(item.getCentralAngle() - angle)
         val b = abs(item2.getCentralAngle() - angle)
         return a>b
+    }
+    private fun normalizeAngle(angle: Float):Float{
+        var value = 0F
+        if(angle>360F){
+            value = angle-360F
+        }
+        else if(angle<0F){
+            value = angle+360F
+        }
+        return value
     }
 }
 
