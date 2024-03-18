@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
+import com.example.myschedule.activity.MainActivity
 import com.example.myschedule.customView.TimePiece
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
@@ -61,10 +62,11 @@ class DayFragment : Fragment(){
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val activity = requireActivity()
         binding= DayLayoutBinding.inflate(inflater)
-        myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
-        myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
-        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
+        myDailyViewModel = (activity as MainActivity).getMyDailyViewModel()
+        myPeriodScheduleViewModel = activity.getMyPeriodScheduleViewModel()
+        myViewModel = activity.getMyViewModel()
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
         val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()
@@ -142,7 +144,11 @@ class DayFragment : Fragment(){
                         frame.rotation = currentRotation + rotation
                         clock.rotation = currentRotation + rotation
                         rotationAngle += rotation
-                        rotationAngle = normalizeAngle(rotationAngle)
+                        if(rotationAngle>360F){
+                            rotationAngle-=360F
+                        }else if(rotationAngle<-360F){
+                            rotationAngle+=360F
+                        }
                         for(item in clockTimeIds){
                             val textView: TextView? = view?.findViewById(item)
                             textView!!.rotation-=rotation
@@ -212,13 +218,12 @@ class DayFragment : Fragment(){
         if (angle < 0) {
             angle += 360f
         }
-        angle = normalizeAngle(angle+rotationAngle)
         val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
         for((index, list) in timePieceLists.withIndex()){
             for(item in list){
                 val angles = item.getAngles()
-                val startAngle = angles.first//normalizeAngle(angles.first+rotationAngle)
-                val endAngle = angles.second//normalizeAngle(angles.second+rotationAngle)
+                val startAngle = normalizeAngle(angles.first+rotationAngle)
+                val endAngle = normalizeAngle(angles.second+rotationAngle)
                 if(endAngle<startAngle){
                     if(angle>startAngle){
                         selectedItems.add(Pair(item, index))
@@ -311,20 +316,24 @@ class DayFragment : Fragment(){
                 .show()
         }
     }
+
+    private fun normalizeAngle(fl: Float): Float {
+        if(fl>360F){
+            return fl-360F
+        }else if(fl<0F){
+            return fl+360F
+        }
+        return fl
+    }
+
     private fun findNearestAngle(item: TimePiece, item2: TimePiece,angle:Float):Boolean{
         val a = abs(item.getCentralAngle() - angle)
         val b = abs(item2.getCentralAngle() - angle)
         return a>b
     }
-    private fun normalizeAngle(angle: Float):Float{
-        var value = 0F
-        if(angle>360F){
-            value = angle-360F
-        }
-        else if(angle<0F){
-            value = angle+360F
-        }
-        return value
+    override fun onResume() {
+        super.onResume()
+        rotationAngle = 0F
     }
 }
 
