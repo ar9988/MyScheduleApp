@@ -7,8 +7,11 @@ import com.example.myschedule.db.MyDAO
 import com.example.myschedule.db.MyDatabase
 import com.example.myschedule.db.Schedule
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: MyRepository
     private val allSchedules: LiveData<List<Schedule>>
@@ -31,5 +34,12 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
     suspend fun deleteSchedule(schedule: Schedule){
         repository.deleteSchedule(schedule)
+    }
+
+    fun getSchedulesByType(type: Int): LiveData<List<Schedule>>{
+        return repository.getSchedulesByType(type)
+    }
+    fun getScheduleByDateAndType(date: String, type: Int): LiveData<List<Schedule>>{
+        return repository.getScheduleByDateAndType(date,type)
     }
 }

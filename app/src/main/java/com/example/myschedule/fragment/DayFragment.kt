@@ -1,6 +1,5 @@
 package com.example.myschedule.fragment
 
-import MyPeriodScheduleViewModel
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.icu.text.SimpleDateFormat
@@ -14,7 +13,6 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
 import com.example.myschedule.activity.MainActivity
@@ -22,7 +20,6 @@ import com.example.myschedule.customView.TimePiece
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
-import com.example.myschedule.viewModel.MyDailyViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.abs
@@ -30,9 +27,7 @@ import kotlin.math.atan2
 
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
-    private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
-    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     private val timePieceLists: MutableList<MutableList<TimePiece>> = MutableList(3) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
@@ -64,15 +59,13 @@ class DayFragment : Fragment(){
     ): View {
         val activity = requireActivity()
         binding= DayLayoutBinding.inflate(inflater)
-        myDailyViewModel = (activity as MainActivity).getMyDailyViewModel()
-        myPeriodScheduleViewModel = activity.getMyPeriodScheduleViewModel()
-        myViewModel = activity.getMyViewModel()
+        myViewModel = (activity as MainActivity).getMyViewModel()
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
-        val dailyScheduleLiveData = myDailyViewModel.getAllSchedules()
         val date = sdf.format(calendar.time)
-        val daySchedule = myViewModel.getScheduleByDate(date)
-        val periodScheduleLiveData = myPeriodScheduleViewModel.getAllSchedules()
+        val dailyScheduleLiveData = myViewModel.getSchedulesByType(0)
+        val daySchedule = myViewModel.getScheduleByDateAndType(date,1)
+        val periodScheduleLiveData = myViewModel.getSchedulesByType(2)
         var colorIndex = 0
         val clock: ConstraintLayout = binding.clockLayout
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
@@ -255,22 +248,8 @@ class DayFragment : Fragment(){
                 .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
                 .setPositiveButton("Yes") { dialog, _ ->
                     frame.removeView(selectedItem.first)
-                    when (selectedItem.second){
-                        0->{
-                            myDailyViewModel.viewModelScope.launch{
-                                myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
-                            }
-                        }
-                        1->{
-                            myViewModel.viewModelScope.launch {
-                                myViewModel.deleteSchedule(selectedItem.first.schedule)
-                            }
-                        }
-                        2->{
-                            myPeriodScheduleViewModel.viewModelScope.launch {
-                                myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
-                            }
-                        }
+                    myViewModel.viewModelScope.launch {
+                        myViewModel.deleteSchedule(selectedItem.first.schedule)
                     }
                     dialog.dismiss()
                 }
@@ -291,22 +270,8 @@ class DayFragment : Fragment(){
                 .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
                 .setPositiveButton("Yes") { dialog, _ ->
                     frame.removeView(selectedItem.first)
-                    when (selectedItem.second){
-                        0->{
-                            myDailyViewModel.viewModelScope.launch{
-                                myDailyViewModel.deleteSchedule(selectedItem.first.schedule)
-                            }
-                        }
-                        1->{
-                            myViewModel.viewModelScope.launch {
-                                myViewModel.deleteSchedule(selectedItem.first.schedule)
-                            }
-                        }
-                        2->{
-                            myPeriodScheduleViewModel.viewModelScope.launch {
-                                myPeriodScheduleViewModel.deleteSchedule(selectedItem.first.schedule)
-                            }
-                        }
+                    myViewModel.viewModelScope.launch {
+                        myViewModel.deleteSchedule(selectedItem.first.schedule)
                     }
                     dialog.dismiss()
                 }

@@ -1,20 +1,16 @@
 package com.example.myschedule.activity
 
-import MyPeriodScheduleViewModel
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
-import com.example.myschedule.viewModel.MyDailyViewModel
 import com.example.myschedule.viewModel.MyViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +19,7 @@ import java.util.Calendar
 
 class InputActivity: AppCompatActivity()  {
     private lateinit var binding : InputLayoutBinding
-    private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
-    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     private var startDay: Calendar = Calendar.getInstance()
     private var endDay: Calendar = Calendar.getInstance()
     private lateinit var title:String
@@ -33,13 +27,11 @@ class InputActivity: AppCompatActivity()  {
     private lateinit var startTime:String
     private lateinit var endTime:String
     private var state = 0
-    private var id=0
+    private var type=0
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private lateinit var frames:Array<ConstraintLayout>
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
-        myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         binding = InputLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -92,156 +84,100 @@ class InputActivity: AppCompatActivity()  {
                 TimePickerDialog(this@InputActivity,16973935,timeSetListener,0,0,true).show()
             }
             rgBtn1.setOnClickListener {
-                id=0
+                type=0
                 deactivateCalendar()
             }
             rgBtn2.setOnClickListener {
-                id=1
+                type=1
                 deactivateCalendar()
                 activateCalendar(1)
             }
             rgBtn3.setOnClickListener {
-                id=2
+                type=2
                 deactivateCalendar()
                 activateCalendar(2)
             }
             btnInput.setOnClickListener {
-                when(state){
-                    0->{
+                when (state) {
+                    0 -> {
                         val yearText = binding.etYear.text.toString()
                         val monthText = binding.etMonth.text.toString()
                         val dayText = binding.etDay.text.toString()
                         val yearText2 = binding.etYear2.text.toString()
                         val monthText2 = binding.etMonth2.text.toString()
                         val dayText2 = binding.etDay2.text.toString()
-                        when(id){
-                            0->{
+                        when (type) {
+                            0 -> {
                                 state++
                                 activateState(state)
+                                startDay.set(0,0,0)
                             }
-                            1 ->{
-                                if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty()) {
+                            1, 2 -> {
+                                if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty() || yearText2.isEmpty() || monthText2.isEmpty() || dayText2.isEmpty()) {
                                     Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
-                                }
-                                else{
+                                } else {
                                     startDay.set(
                                         yearText.toInt(),
-                                        monthText.toInt()-1,
-                                        dayText.toInt()
-                                    )
-                                    state++
-                                    activateState(state)
-                                }
-                            }
-                            2->{
-                                if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty() ||yearText2.isEmpty() || monthText2.isEmpty() || dayText2.isEmpty()) {
-                                    Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
-                                }
-                                else{
-                                    startDay.set(
-                                        yearText.toInt(),
-                                        monthText.toInt()-1,
+                                        monthText.toInt() - 1,
                                         dayText.toInt()
                                     )
                                     endDay.set(
                                         yearText2.toInt(),
-                                        monthText2.toInt()-1,
+                                        monthText2.toInt() - 1,
                                         dayText2.toInt()
                                     )
-                                    if(endDay.after(startDay)){
-                                        state++
-                                        activateState(state)
-                                    }
-                                    else{
+                                    if (state == 2 && endDay.before(startDay)) {
                                         Toast.makeText(this@InputActivity, "옳바른 기간을 입력하세요.", Toast.LENGTH_SHORT).show()
+                                        return@setOnClickListener
                                     }
+                                    state++
+                                    activateState(state)
                                 }
                             }
                         }
                     }
-                    1->{
+                    1 -> {
                         val hour = binding.etHour1.text.toString()
                         val minute = binding.etMinute1.text.toString()
                         val hour2 = binding.etHour2.text.toString()
                         val minute2 = binding.etMinute2.text.toString()
-                        if(hour.isEmpty()||minute.isEmpty()||hour2.isEmpty()||minute2.isEmpty()){
+                        if (hour.isEmpty() || minute.isEmpty() || hour2.isEmpty() || minute2.isEmpty()) {
                             Toast.makeText(this@InputActivity, "시간을 입력하세요", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
                         }
-                        else{
-                            //시간처리
-                            startTime="${hour}-${minute}"
-                            endTime="${hour2}-${minute2}"
-                            state++
-                            activateState(state)
-                        }
+                        // 시간처리
+                        startTime = "$hour-$minute"
+                        endTime = "$hour2-$minute2"
+                        state++
+                        activateState(state)
                     }
-                    2-> {
+                    2 -> {
                         title = binding.etTitle.text.toString()
                         content = binding.etContent.text.toString()
-                        if (id == 0) {
-                            if(title.isEmpty()||content.isEmpty()){
-                                Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
-                            }
-                            else{
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    with(myDailyViewModel) {
-                                        insertSchedule(
-                                            Schedule(
-                                                0L,
-                                                title,
-                                                content,
-                                                "",
-                                                "${startTime}-${endTime}"
-                                            )
-                                        )
-                                    }
-                                }
-                                finish()
-                            }
-                        } else if (id == 1) {
-                            if(title.isEmpty()||content.isEmpty()){
-                                Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
-                            }
-                            else{
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    with(myViewModel) {
-                                        insertSchedule(
-                                            Schedule(
-                                                0L,
-                                                title,
-                                                content,
-                                                "${sdf.format(startDay.time)}",
-                                                "${startTime}-${endTime}"
-                                            )
-                                        )
-                                    }
-                                }
-                                finish()
-                            }
-                        } else {
-                            if(title.isEmpty()||content.isEmpty()){
-                                Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
-                            }
-                            else{
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    with(myPeriodScheduleViewModel) {
-                                        insertSchedule(
-                                            Schedule(
-                                                0L,
-                                                title,
-                                                content,
-                                                "${sdf.format(startDay.time)}-${sdf.format(endDay.time)}",
-                                                "${startTime}-${endTime}"
-                                            )
-                                        )
-                                    }
-                                }
-                                finish()
+                        if (title.isEmpty() || content.isEmpty()) {
+                            Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
+                        }
+                        val dateText = if (type == 2)"${sdf.format(startDay.time)}-${sdf.format(endDay.time)}" else sdf.format(startDay.time)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            with(myViewModel) {
+                                insertSchedule(
+                                    Schedule(
+                                        0L,
+                                        type,
+                                        title,
+                                        content,
+                                        dateText,
+                                        "${startTime}-${endTime}"
+                                    )
+                                )
                             }
                         }
+                        finish()
                     }
                 }
             }
+
             btnCancel.setOnClickListener {
                 onBackPressed()
             }

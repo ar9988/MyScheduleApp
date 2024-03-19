@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -42,6 +43,8 @@ dependencies {
 
     val roomVersion = "2.6.1"
     val lifecycleVersion = "2.7.0"
+    implementation("com.google.dagger:hilt-android:2.51")
+    annotationProcessor("com.google.dagger:hilt-compiler:2.51")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")

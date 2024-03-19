@@ -1,34 +1,27 @@
 package com.example.myschedule.activity
 
-import MyPeriodScheduleViewModel
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myschedule.adapter.MyScheduleAdapter
 import com.example.myschedule.databinding.DeleteLayoutBinding
 import com.example.myschedule.db.Schedule
-import com.example.myschedule.viewModel.MyDailyViewModel
 import com.example.myschedule.viewModel.MyViewModel
 import kotlinx.coroutines.launch
 import java.lang.NullPointerException
-import java.time.Period
 import java.util.Calendar
 
 class DeleteActivity : AppCompatActivity() {
     private lateinit var binding : DeleteLayoutBinding
-    private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
-    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     private lateinit var schedules : Array<List<Schedule>>
     private lateinit var adapter : MyScheduleAdapter
     private lateinit var livedata1 :LiveData<List<Schedule>>
@@ -39,19 +32,17 @@ class DeleteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DeleteLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
-        myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         schedules = Array(3) { emptyList() }
-        livedata1 = myDailyViewModel.getAllSchedules()
+        livedata1 = myViewModel.getSchedulesByType(0)
         livedata1.observe(this) {
             schedules[0] = it
         }
-        livedata2 = myViewModel.getAllSchedules()
+        livedata2 = myViewModel.getSchedulesByType(1)
         livedata2.observe(this) {
             schedules[1] = it
         }
-        livedata3 = myPeriodScheduleViewModel.getAllSchedules()
+        livedata3 = myViewModel.getSchedulesByType(2)
         livedata3.observe(this) {
             schedules[2] = it
         }
@@ -200,22 +191,8 @@ class DeleteActivity : AppCompatActivity() {
             .setMessage("선택한 일정을 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                 for (schedule in adapter.getCheckedItems()) {
-                    when (selectedItemPosition) {
-                        0 -> {
-                            myDailyViewModel.viewModelScope.launch {
-                                myDailyViewModel.deleteSchedule(schedule)
-                            }
-                        }
-                        1 -> {
-                            myViewModel.viewModelScope.launch {
-                                myViewModel.deleteSchedule(schedule)
-                            }
-                        }
-                        2 -> {
-                            myPeriodScheduleViewModel.viewModelScope.launch {
-                                myPeriodScheduleViewModel.deleteSchedule(schedule)
-                            }
-                        }
+                    myViewModel.viewModelScope.launch {
+                        myViewModel.deleteSchedule(schedule)
                     }
                 }
                 binding.recyclerView.adapter = MyScheduleAdapter(emptyList())

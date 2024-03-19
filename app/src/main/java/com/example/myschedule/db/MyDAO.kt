@@ -23,4 +23,11 @@ interface MyDAO {
 
     @Query("DELETE FROM Schedule")
     suspend fun deleteAllSchedule()
+
+    @Query("SELECT * FROM Schedule WHERE type = :type")
+    fun getSchedulesByType(type: Int): LiveData<List<Schedule>>
+
+    @Query("SELECT * FROM Schedule WHERE date = :date AND type = :type")
+    fun getScheduleByDateAndType(date: String, type: Int): LiveData<List<Schedule>>
+
 }

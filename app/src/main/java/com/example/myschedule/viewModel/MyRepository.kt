@@ -11,6 +11,12 @@ class MyRepository(private val myDao: MyDAO) {
     fun getScheduleByDate(date:String): LiveData<List<Schedule>> {
         return myDao.getScheduleByDate(date)
     }
+    fun getSchedulesByType(type: Int): LiveData<List<Schedule>>{
+        return myDao.getSchedulesByType(type)
+    }
+    fun getScheduleByDateAndType(date: String, type: Int): LiveData<List<Schedule>>{
+        return myDao.getScheduleByDateAndType(date,type)
+    }
     suspend fun deleteSchedule(schedule: Schedule){
         myDao.deleteSchedule(schedule)
     }

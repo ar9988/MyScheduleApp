@@ -1,6 +1,5 @@
 package com.example.myschedule.activity
 
-import MyPeriodScheduleViewModel
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,7 +9,6 @@ import com.example.myschedule.databinding.ActivityMainBinding
 import com.example.myschedule.fragment.DayFragment
 import com.example.myschedule.fragment.MonthFragment
 import com.example.myschedule.fragment.WeekFragment
-import com.example.myschedule.viewModel.MyDailyViewModel
 import com.example.myschedule.viewModel.MyViewModel
 import com.google.android.material.tabs.TabLayout
 
@@ -22,15 +20,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var inputBtn: Button
     private lateinit var deleteBtn: Button
-    private lateinit var myDailyViewModel: MyDailyViewModel
     private lateinit var myViewModel: MyViewModel
-    private lateinit var myPeriodScheduleViewModel: MyPeriodScheduleViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        myDailyViewModel = ViewModelProvider(this)[MyDailyViewModel::class.java]
         myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
-        myPeriodScheduleViewModel = ViewModelProvider(this)[MyPeriodScheduleViewModel::class.java]
         tabLayout = binding.tabLayout
         fragmentDay = DayFragment()
         fragmentMonth = MonthFragment()
@@ -67,15 +61,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-    fun getMyDailyViewModel(): MyDailyViewModel {
-        return myDailyViewModel
-    }
-
     fun getMyViewModel(): MyViewModel {
         return myViewModel
     }
 
-    fun getMyPeriodScheduleViewModel(): MyPeriodScheduleViewModel {
-        return myPeriodScheduleViewModel
-    }
 }
