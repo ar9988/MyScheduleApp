@@ -10,9 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
 import com.example.myschedule.activity.MainActivity
@@ -20,14 +23,16 @@ import com.example.myschedule.customView.TimePiece
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.atan2
 
+@AndroidEntryPoint
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
-    private lateinit var myViewModel: MyViewModel
+    private val myViewModel: MyViewModel by viewModels()
     private val timePieceLists: MutableList<MutableList<TimePiece>> = MutableList(3) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
@@ -59,7 +64,7 @@ class DayFragment : Fragment(){
     ): View {
         val activity = requireActivity()
         binding= DayLayoutBinding.inflate(inflater)
-        myViewModel = (activity as MainActivity).getMyViewModel()
+        //myViewModel = (activity as MainActivity).getMyViewModel()
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
         val date = sdf.format(calendar.time)

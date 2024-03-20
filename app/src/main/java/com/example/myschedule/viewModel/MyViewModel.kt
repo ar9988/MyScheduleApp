@@ -3,6 +3,7 @@ package com.example.myschedule.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.example.myschedule.db.MyDAO
 import com.example.myschedule.db.MyDatabase
 import com.example.myschedule.db.Schedule
@@ -12,14 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MyViewModel(application: Application) : AndroidViewModel(application) {
+class MyViewModel @Inject constructor(
     private val repository: MyRepository
-    private val allSchedules: LiveData<List<Schedule>>
-    init {
-        val myDao = MyDatabase.getDatabase(application).getMyDao()
-        repository = MyRepository(myDao)
-        allSchedules = repository.getAllSchedules()
-    }
+) : ViewModel() {
+    private val allSchedules: LiveData<List<Schedule>> = repository.getAllSchedules()
     fun getAllSchedules():LiveData<List<Schedule>>{
         return allSchedules
     }

@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,13 +17,15 @@ import com.example.myschedule.adapter.MyScheduleAdapter
 import com.example.myschedule.databinding.DeleteLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.lang.NullPointerException
 import java.util.Calendar
 
+@AndroidEntryPoint
 class DeleteActivity : AppCompatActivity() {
     private lateinit var binding : DeleteLayoutBinding
-    private lateinit var myViewModel: MyViewModel
+    private val myViewModel: MyViewModel by viewModels()
     private lateinit var schedules : Array<List<Schedule>>
     private lateinit var adapter : MyScheduleAdapter
     private lateinit var livedata1 :LiveData<List<Schedule>>
@@ -32,7 +36,6 @@ class DeleteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DeleteLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         schedules = Array(3) { emptyList() }
         livedata1 = myViewModel.getSchedulesByType(0)
         livedata1.observe(this) {

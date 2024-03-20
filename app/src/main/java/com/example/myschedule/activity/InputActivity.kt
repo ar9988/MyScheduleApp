@@ -6,20 +6,24 @@ import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
+@AndroidEntryPoint
 class InputActivity: AppCompatActivity()  {
     private lateinit var binding : InputLayoutBinding
-    private lateinit var myViewModel: MyViewModel
+    private val myViewModel: MyViewModel by viewModels()
     private var startDay: Calendar = Calendar.getInstance()
     private var endDay: Calendar = Calendar.getInstance()
     private lateinit var title:String
@@ -32,7 +36,6 @@ class InputActivity: AppCompatActivity()  {
     private lateinit var frames:Array<ConstraintLayout>
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         binding = InputLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         frames = arrayOf(binding.frame0, binding.frame1, binding.frame2)
