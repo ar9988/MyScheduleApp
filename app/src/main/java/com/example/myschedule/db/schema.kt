@@ -9,7 +9,8 @@ data class Schedule (
     val type: Int,
     val name: String,
     val content: String,
-    val date: String,
+    val startDate: String,
+    val endDate:String,
     val times: String
 )
 

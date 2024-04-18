@@ -15,7 +15,12 @@ class MyRepository(private val myDao: MyDAO) {
         return myDao.getSchedulesByType(type)
     }
     fun getScheduleByDateAndType(date: String, type: Int): LiveData<List<Schedule>>{
-        return myDao.getScheduleByDateAndType(date,type)
+        when(type){
+            0 -> return myDao.getSchedulesByType(0)
+            1 -> return myDao.getScheduleByDate(date)
+            2 -> return myDao.getSchedulesBetweenDate(date)
+            else -> return myDao.getAllSchedule()
+        }
     }
     suspend fun deleteSchedule(schedule: Schedule){
         myDao.deleteSchedule(schedule)
@@ -25,5 +30,14 @@ class MyRepository(private val myDao: MyDAO) {
     }
     suspend fun insertSchedule(schedule: Schedule) {
         myDao.insertSchedule(schedule)
+    }
+
+    fun getWeekScheduleByDateAndType(startDate: String,endDate:String, type: Int): LiveData<List<Schedule>> {
+        when(type){
+            0 -> return myDao.getSchedulesByType(0)
+            1 -> return myDao.getWeekScheduleByDateAndType(startDate,endDate,type)
+            2 -> return myDao.getWeekSchedulesBetweenDateAndType(startDate,endDate,type)
+            else -> return myDao.getAllSchedule()
+        }
     }
 }

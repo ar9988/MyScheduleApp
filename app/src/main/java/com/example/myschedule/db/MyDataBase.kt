@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 
 @Database(entities = [Schedule::class],
-    exportSchema = false, version = 3)
+    exportSchema = false, version = 4)
 abstract class MyDatabase : RoomDatabase() {
     abstract fun getMyDao() : MyDAO
 

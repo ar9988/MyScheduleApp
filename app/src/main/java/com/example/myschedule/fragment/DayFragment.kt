@@ -4,27 +4,23 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.myschedule.R
-import com.example.myschedule.activity.MainActivity
-import com.example.myschedule.customView.TimePiece
+import com.example.myschedule.customView.circularSectorFormSchedule
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -33,13 +29,15 @@ import kotlin.math.atan2
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
     private val myViewModel: MyViewModel by viewModels()
-    private val timePieceLists: MutableList<MutableList<TimePiece>> = MutableList(3) { mutableListOf() }
+    private val scheduleLists: MutableList<MutableList<circularSectorFormSchedule>> = MutableList(3) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
     private var prevX = 0f
     private var prevY = 0f
     private var dragFlag = false
     private var rotationAngle = 0f
+    private var refreshIdx = 0
+    private var colorIndex = 0
     private var clockTimeIds = arrayOf(
         R.id.clockTime_0, R.id.clockTime_1, R.id.clockTime_2, R.id.clockTime_3,
         R.id.clockTime_4, R.id.clockTime_5, R.id.clockTime_6, R.id.clockTime_7,
@@ -62,50 +60,25 @@ class DayFragment : Fragment(){
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val activity = requireActivity()
         binding= DayLayoutBinding.inflate(inflater)
-        //myViewModel = (activity as MainActivity).getMyViewModel()
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
         val date = sdf.format(calendar.time)
         val dailyScheduleLiveData = myViewModel.getSchedulesByType(0)
         val daySchedule = myViewModel.getScheduleByDateAndType(date,1)
-        val periodScheduleLiveData = myViewModel.getSchedulesByType(2)
-        var colorIndex = 0
+        val periodScheduleLiveData = myViewModel.getScheduleByDateAndType(date,2)
         val clock: ConstraintLayout = binding.clockLayout
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
-            removeTimePieces(0,frame)
-            for (schedule in dailySchedules) {
-                val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
-                val color = ContextCompat.getColor(requireContext(), colorResourceId)
-                colorIndex++
-                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,color,binding) }
-                frame.addView(v)
-                v?.let { timePieceLists[0].add(it) }
-            }
+            removeSchedules(0,frame)
+            addSchedules(0,frame,dailySchedules)
         }
         daySchedule.observe(viewLifecycleOwner){schedules ->
-            removeTimePieces(1,frame)
-            for(schedule in schedules){
-                val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
-                val color = ContextCompat.getColor(requireContext(), colorResourceId)
-                colorIndex++
-                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,color,binding) }
-                frame.addView(v)
-                v?.let { timePieceLists[1].add(it) }
-            }
+            removeSchedules(1,frame)
+            addSchedules(1,frame,schedules)
         }
         periodScheduleLiveData.observe(viewLifecycleOwner){schedules ->
-            val searchedSchedule = search(schedules)
-            removeTimePieces(2,frame)
-            for(schedule in searchedSchedule){
-                val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
-                val color = ContextCompat.getColor(requireContext(), colorResourceId)
-                colorIndex++
-                val v : TimePiece? = context?.let { TimePiece(it,attrs = null,schedule,color,binding) }
-                frame.addView(v)
-                v?.let { timePieceLists[2].add(it) }
-            }
+            removeSchedules(2,frame)
+            addSchedules(2,frame,schedules)
         }
         touchScreen.setOnTouchListener { _, event ->
             when (event.action) {
@@ -169,39 +142,22 @@ class DayFragment : Fragment(){
         return binding.root
     }
 
-    private fun search(schedules: List<Schedule>?): MutableList<Schedule> {
-        val searchedSchedules: MutableList<Schedule> = mutableListOf()
-        if (schedules != null) {
-            for(schedule in schedules) {
-                val calendar1 = Calendar.getInstance()
-                val calendar2 = Calendar.getInstance()
-                val date = Calendar.getInstance()
-                val dates = schedule.date.split("-")
-                calendar1.set(
-                    dates[0].toInt(),
-                    dates[1].toInt()-1,
-                    dates[2].toInt()
-                )
-                calendar2.set(
-                    dates[3].toInt(),
-                    dates[4].toInt()-1,
-                    dates[5].toInt()
-                )
-                val isInputDateBetweenCalendars = (date.timeInMillis >= calendar1.timeInMillis &&
-                        date.timeInMillis <= calendar2.timeInMillis)
-                if(isInputDateBetweenCalendars){
-                    searchedSchedules.add(schedule)
-                }
-            }
+    private fun addSchedules(i: Int, frame: FrameLayout, schedules: List<Schedule>) {
+        for (schedule in schedules) {
+            val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
+            val color = ContextCompat.getColor(requireContext(), colorResourceId)
+            colorIndex++
+            val v : circularSectorFormSchedule? = context?.let { circularSectorFormSchedule(it,attrs = null,schedule,color,binding) }
+            frame.addView(v)
+            v?.let { scheduleLists[i].add(it) }
         }
-        return searchedSchedules
     }
 
-    private fun removeTimePieces(i: Int, frame: FrameLayout) {
-        for (timePiece in timePieceLists[i]) {
+    private fun removeSchedules(i: Int, frame: FrameLayout) {
+        for (timePiece in scheduleLists[i]) {
             frame.removeView(timePiece)
         }
-        timePieceLists[i].clear()
+        scheduleLists[i].clear()
     }
     private fun clickEvent(binding: DayLayoutBinding,event: MotionEvent){
         val touchScreen = binding.touchScreen
@@ -216,8 +172,8 @@ class DayFragment : Fragment(){
         if (angle < 0) {
             angle += 360f
         }
-        val selectedItems: MutableList<Pair<TimePiece,Int>> = mutableListOf()
-        for((index, list) in timePieceLists.withIndex()){
+        val selectedItems: MutableList<Pair<circularSectorFormSchedule,Int>> = mutableListOf()
+        for((index, list) in scheduleLists.withIndex()){
             for(item in list){
                 val angles = item.getAngles()
                 val startAngle = normalizeAngle(angles.first+rotationAngle)
@@ -250,15 +206,8 @@ class DayFragment : Fragment(){
             val endTime = times[2]+"시"+times[3]+"분"
             AlertDialog.Builder(requireContext())
                 .setTitle(itemName)
-                .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    frame.removeView(selectedItem.first)
-                    myViewModel.viewModelScope.launch {
-                        myViewModel.deleteSchedule(selectedItem.first.schedule)
-                    }
-                    dialog.dismiss()
-                }
-                .setNegativeButton("No") { dialog, _ ->
+                .setMessage("$itemContent\n$startTime - $endTime\n")
+                .setPositiveButton("check") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
@@ -272,15 +221,8 @@ class DayFragment : Fragment(){
             val endTime = times[2]+"시"+times[3]+"분"
             AlertDialog.Builder(requireContext())
                 .setTitle(itemName)
-                .setMessage("$itemContent\n$startTime - $endTime\nDo you want to delete?")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    frame.removeView(selectedItem.first)
-                    myViewModel.viewModelScope.launch {
-                        myViewModel.deleteSchedule(selectedItem.first.schedule)
-                    }
-                    dialog.dismiss()
-                }
-                .setNegativeButton("No") { dialog, _ ->
+                .setMessage("$itemContent\n$startTime - $endTime\n")
+                .setPositiveButton("check") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
@@ -296,7 +238,7 @@ class DayFragment : Fragment(){
         return fl
     }
 
-    private fun findNearestAngle(item: TimePiece, item2: TimePiece,angle:Float):Boolean{
+    private fun findNearestAngle(item: circularSectorFormSchedule, item2: circularSectorFormSchedule, angle:Float):Boolean{
         val a = abs(item.getCentralAngle() - angle)
         val b = abs(item2.getCentralAngle() - angle)
         return a>b
@@ -304,6 +246,17 @@ class DayFragment : Fragment(){
     override fun onResume() {
         super.onResume()
         rotationAngle = 0F
+        colorIndex = 0
+        refreshIdx = 0
+    }
+
+    fun refresh(){
+        refreshIdx %= 3
+        for (timePiece in scheduleLists[refreshIdx]) {
+            binding.watchCenter.removeView(timePiece)
+            binding.watchCenter.addView(timePiece)
+        }
+        refreshIdx++
     }
 }
 

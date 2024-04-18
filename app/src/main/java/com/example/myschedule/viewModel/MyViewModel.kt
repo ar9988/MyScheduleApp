@@ -39,4 +39,8 @@ class MyViewModel @Inject constructor(
     fun getScheduleByDateAndType(date: String, type: Int): LiveData<List<Schedule>>{
         return repository.getScheduleByDateAndType(date,type)
     }
+
+    fun getWeekSchedulesByDateAndType(startDate: String,endDate:String, type: Int): LiveData<List<Schedule>> {
+        return repository.getWeekScheduleByDateAndType(startDate,endDate,type)
+    }
 }

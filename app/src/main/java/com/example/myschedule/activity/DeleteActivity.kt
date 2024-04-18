@@ -8,9 +8,7 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myschedule.adapter.MyScheduleAdapter
@@ -112,7 +110,7 @@ class DeleteActivity : AppCompatActivity() {
             }
             1 ->{
                 for(schedule in schedules[pos]){
-                    val dates = schedule.date.split("-").map { it.toIntOrNull()?.toString() ?: it }
+                    val dates = schedule.startDate.split("-").map { it.toIntOrNull()?.toString() ?: it }+schedule.endDate.split("-").map { it.toIntOrNull()?.toString() ?: it }
                     val contents = listOf(schedule.name,schedule.content)
                     val data = dates + contents
                     var flag = true
@@ -145,7 +143,7 @@ class DeleteActivity : AppCompatActivity() {
                         val calendar1 = Calendar.getInstance()
                         val calendar2 = Calendar.getInstance()
                         val inputDate = Calendar.getInstance()
-                        val dates = schedule.date.split("-")
+                        val dates = schedule.startDate.split("-").map { it.toIntOrNull()?.toString() ?: it }+schedule.endDate.split("-").map { it.toIntOrNull()?.toString() ?: it }
                         val contents = listOf(schedule.name,schedule.content)
                         calendar1.set(
                             dates[0].toInt(),

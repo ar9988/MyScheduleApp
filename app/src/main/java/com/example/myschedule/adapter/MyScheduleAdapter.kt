@@ -14,7 +14,7 @@ class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView
         fun bind(schedule: Schedule) {
             binding.title.text = schedule.name
             binding.content.text = schedule.content
-            binding.date.text = schedule.date
+            binding.date.text = schedule.startDate+"-"+schedule.endDate.toString()
             binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     toggleItemChecked(schedule)

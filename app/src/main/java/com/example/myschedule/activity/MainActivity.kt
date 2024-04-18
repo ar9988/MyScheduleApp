@@ -23,11 +23,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var inputBtn: Button
     private lateinit var deleteBtn: Button
-    private val myViewModel: MyViewModel by viewModels()
+    private lateinit var refreshBtn: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        //myViewModel = ViewModelProvider(this)[MyViewModel::class.java]
         tabLayout = binding.tabLayout
         fragmentDay = DayFragment()
         fragmentMonth = MonthFragment()
@@ -35,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(binding.tabContent.id, fragmentDay).commit()
         inputBtn = binding.editBtn
         deleteBtn = binding.editBtn2
+        refreshBtn = binding.editBtn3
         inputBtn.setOnClickListener {
             val intent = Intent(this, InputActivity::class.java)
             startActivity(intent)
@@ -42,6 +42,16 @@ class MainActivity : AppCompatActivity() {
         deleteBtn.setOnClickListener {
             val intent = Intent(this, DeleteActivity::class.java)
             startActivity(intent)
+        }
+        refreshBtn.setOnClickListener{
+            val currentFragment = supportFragmentManager.findFragmentById(binding.tabContent.id)
+            if(currentFragment == fragmentDay){
+                fragmentDay.refresh()
+            }else if(currentFragment == fragmentWeek){
+                fragmentWeek.refresh()
+            }else{
+                fragmentMonth.refresh()
+            }
         }
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab) {

@@ -1,6 +1,7 @@
 package com.example.myschedule.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,5 +21,9 @@ class MonthFragment :Fragment(){
     ): View {
         binding= MonthLayoutBinding.inflate(inflater)
         return binding.root
+    }
+
+    fun refresh(){
+        Log.d("Month","month called")
     }
 }

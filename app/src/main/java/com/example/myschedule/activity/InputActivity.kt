@@ -115,7 +115,25 @@ class InputActivity: AppCompatActivity()  {
                                 activateState(state)
                                 startDay.set(0,0,0)
                             }
-                            1, 2 -> {
+                            1 -> {
+                                if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty()) {
+                                    Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    startDay.set(
+                                        yearText.toInt(),
+                                        monthText.toInt() - 1,
+                                        dayText.toInt()
+                                    )
+                                    endDay.set(
+                                        0,
+                                        0,
+                                        0
+                                    )
+                                    state++
+                                    activateState(state)
+                                }
+                            }
+                            2 -> {
                                 if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty() || yearText2.isEmpty() || monthText2.isEmpty() || dayText2.isEmpty()) {
                                     Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
                                 } else {
@@ -161,7 +179,6 @@ class InputActivity: AppCompatActivity()  {
                             Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
                             return@setOnClickListener
                         }
-                        val dateText = if (type == 2)"${sdf.format(startDay.time)}-${sdf.format(endDay.time)}" else sdf.format(startDay.time)
                         CoroutineScope(Dispatchers.IO).launch {
                             with(myViewModel) {
                                 insertSchedule(
@@ -170,7 +187,8 @@ class InputActivity: AppCompatActivity()  {
                                         type,
                                         title,
                                         content,
-                                        dateText,
+                                        sdf.format(startDay.time),
+                                        sdf.format(endDay.time),
                                         "${startTime}-${endTime}"
                                     )
                                 )

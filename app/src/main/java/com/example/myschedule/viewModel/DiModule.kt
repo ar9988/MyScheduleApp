@@ -1,6 +1,5 @@
 package com.example.myschedule.viewModel
 
-import com.example.myschedule.viewModel.MyRepository
 import com.example.myschedule.db.MyDAO
 import dagger.Module
 import dagger.Provides

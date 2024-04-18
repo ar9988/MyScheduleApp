@@ -8,14 +8,13 @@ import android.graphics.Paint
 import android.graphics.PathMeasure
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
 import kotlin.math.cos
 import kotlin.math.sin
 
-class TimePiece(
+class circularSectorFormSchedule(
     context: Context,
     attrs: AttributeSet?,
     val schedule: Schedule,
