@@ -52,13 +52,14 @@ class rectangleFormSchedule(
             duration += startLocation
             startLocation = 0
         }
-        if (startLocation + duration > frameLayout.height) {
-            duration -= (startLocation + duration - frameLayout.height)
+        if (startLocation + duration > 1020) {
+            duration -= (startLocation + duration - 1020)
         }
 
         if (duration > 0) {
             val x = width / 2f
             val y = startLocation.dpToPx()
+            paint.color = colorCode
             val rect = Rect(0, y, width, (startLocation + duration).dpToPx())
             canvas.drawRect(rect, paint)
             canvas.drawRect(rect, paint2)

@@ -117,7 +117,7 @@ class WeekFragment : Fragment(){
                     if(frameIdx < 0) {
                         frameIdx += 7
                     }
-                    while(calendar1.time!=calendar2.time){
+                    while(calendar1.time<=calendar2.time){
                         val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color,frames[frameIdx]) }
                         frames[frameIdx].addView(v)
                         v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
