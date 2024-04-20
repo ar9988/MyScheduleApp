@@ -55,22 +55,22 @@ class WeekFragment : Fragment(){
         val daySchedule = myViewModel.getWeekSchedulesByDateAndType(sDate,eDate,1)
         val periodScheduleLiveData = myViewModel.getWeekSchedulesByDateAndType(sDate,eDate,2)
         dailyScheduleLiveData.observe(viewLifecycleOwner){dailySchedules->
-            removeSchedules(0,frames)
-            addSchedules(0,dailySchedules,frames)
+            removeSchedules(0)
+            addSchedules(0,dailySchedules)
         }
         daySchedule.observe(viewLifecycleOwner){daySchedules->
-            removeSchedules(1,frames)
-            addSchedules(1,daySchedules,frames)
+            removeSchedules(1)
+            addSchedules(1,daySchedules)
         }
         periodScheduleLiveData.observe(viewLifecycleOwner){periodSchedules->
-            removeSchedules(2,frames)
-            addSchedules(2,periodSchedules,frames)
+            removeSchedules(2)
+            addSchedules(2,periodSchedules)
         }
 
         return binding.root
     }
 
-    private fun addSchedules(i:Int,schedules: List<Schedule>,frames: Array<FrameLayout>) {
+    private fun addSchedules(i:Int,schedules: List<Schedule>) {
         for (schedule in schedules) {
             val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
             val color = ContextCompat.getColor(requireContext(), colorResourceId)
@@ -128,7 +128,7 @@ class WeekFragment : Fragment(){
             }
         }
     }
-    private fun removeSchedules(i: Int, frames: Array<FrameLayout>) {
+    private fun removeSchedules(i: Int) {
         for (timePiece in scheduleLists[i]) {
             frames[timePiece.second].removeView(timePiece.first)
         }
