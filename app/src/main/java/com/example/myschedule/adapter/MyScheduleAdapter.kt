@@ -4,17 +4,29 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myschedule.databinding.ScheduleItemBinding
+import com.example.myschedule.databinding.ScheduleItemDeleteBinding
 import com.example.myschedule.db.Schedule
 
 class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapter.ScheduleViewHolder>(){
     private val checkedItems = HashSet<Schedule>()
-    inner class ScheduleViewHolder(val binding: ScheduleItemBinding) : RecyclerView.ViewHolder(binding.root){
+    inner class ScheduleViewHolder(val binding: ScheduleItemDeleteBinding) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(schedule: Schedule) {
             binding.title.text = schedule.name
             binding.content.text = schedule.content
-            binding.date.text = schedule.startDate+"-"+schedule.endDate.toString()
+            val times = schedule.times.split("-")
+            when(schedule.type){
+                0->{
+                    binding.date.text = "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
+                }
+                1->{
+                    binding.date.text = schedule.startDate+"\n"+ "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
+                }
+                2->{
+
+                    binding.date.text = schedule.startDate+"~"+schedule.endDate+"\n"+ "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
+                }
+            }
             binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     toggleItemChecked(schedule)
@@ -44,7 +56,7 @@ class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScheduleViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ScheduleItemBinding.inflate(layoutInflater, parent, false)
+        val binding = ScheduleItemDeleteBinding.inflate(layoutInflater, parent, false)
         return ScheduleViewHolder(binding)
     }
 

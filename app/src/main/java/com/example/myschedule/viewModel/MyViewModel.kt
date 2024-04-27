@@ -1,11 +1,7 @@
 package com.example.myschedule.viewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.example.myschedule.db.MyDAO
-import com.example.myschedule.db.MyDatabase
 import com.example.myschedule.db.Schedule
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,5 +38,9 @@ class MyViewModel @Inject constructor(
 
     fun getWeekSchedulesByDateAndType(startDate: String,endDate:String, type: Int): LiveData<List<Schedule>> {
         return repository.getWeekScheduleByDateAndType(startDate,endDate,type)
+    }
+
+    fun getMonthSchedules(sDate:String, eDate:String): LiveData<List<Schedule>> {
+        return repository.getMonthSchedules(sDate,eDate)
     }
 }

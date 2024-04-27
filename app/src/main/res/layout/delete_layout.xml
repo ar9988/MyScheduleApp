@@ -181,7 +181,7 @@
         app:layout_constraintBottom_toBottomOf="@id/checkbox"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        tools:listitem="@layout/schedule_item"
+        tools:listitem="@layout/schedule_item_delete"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

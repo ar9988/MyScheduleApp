@@ -43,4 +43,5 @@
     <string name="rd_btn1">일일</string>
     <string name="rd_btn2">일회성</string>
     <string name="rd_btn3">기간</string>
+    <string name="confirm">확인</string>
 </resources>

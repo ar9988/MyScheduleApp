@@ -40,4 +40,8 @@ class MyRepository(private val myDao: MyDAO) {
             else -> myDao.getAllSchedule()
         }
     }
+
+    fun getMonthSchedules(sDate: String, eDate: String): LiveData<List<Schedule>> {
+        return myDao.getMonthSchedules(sDate, eDate)
+    }
 }
