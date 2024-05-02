@@ -161,7 +161,6 @@ class DayFragment : Fragment(){
     }
     private fun clickEvent(binding: DayLayoutBinding,event: MotionEvent){
         val touchScreen = binding.touchScreen
-        val frame = binding.watchCenter
         val centerX = touchScreen.width / 2f
         val centerY = touchScreen.height / 2f
         val clickX = event.x
@@ -207,7 +206,7 @@ class DayFragment : Fragment(){
             AlertDialog.Builder(requireContext())
                 .setTitle(itemName)
                 .setMessage("$itemContent\n$startTime - $endTime\n")
-                .setPositiveButton("check") { dialog, _ ->
+                .setPositiveButton("확인") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
@@ -222,7 +221,7 @@ class DayFragment : Fragment(){
             AlertDialog.Builder(requireContext())
                 .setTitle(itemName)
                 .setMessage("$itemContent\n$startTime - $endTime\n")
-                .setPositiveButton("check") { dialog, _ ->
+                .setPositiveButton("확인") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()

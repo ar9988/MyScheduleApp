@@ -1,22 +1,28 @@
 package com.example.myschedule.fragment
 
+import android.app.Dialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myschedule.adapter.MonthYearPickerDialog
 import com.example.myschedule.adapter.MyScheduleAdapterMonth
 import com.example.myschedule.databinding.MonthLayoutBinding
+import com.example.myschedule.databinding.ScheduleItemMonthBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 import java.util.Locale
@@ -76,10 +82,26 @@ class MonthFragment :Fragment(){
     }
 
     private fun setCalendar() {
-        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(),7)
         val sortedSchedule : MutableList<MutableList<Schedule>> = sortingSchedules(schedules.value!!)
         val adapter = MyScheduleAdapterMonth(sortedSchedule)
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(),7)
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                val child = rv.findChildViewUnder(e.x, e.y)
+                if(child!=null){
+                    val position = rv.getChildAdapterPosition(child)
+                    Log.d("Onclick",position.toString())
+                }
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+
+            }
+        })
     }
 
     private fun sortingSchedules(schedules: List<Schedule>): MutableList<MutableList<Schedule>> {

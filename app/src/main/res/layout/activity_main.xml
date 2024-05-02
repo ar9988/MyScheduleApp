@@ -70,6 +70,7 @@
 
 
     <FrameLayout
+
         android:id="@+id/tabContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
