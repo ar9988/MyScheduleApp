@@ -1,21 +1,14 @@
 package com.example.myschedule.adapter
 
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myschedule.R
 import com.example.myschedule.databinding.ScheduleItemMonthBinding
 import com.example.myschedule.db.Schedule
-import java.text.FieldPosition
 
 class MyScheduleAdapterMonth(private val itemList: MutableList<MutableList<Schedule>>): RecyclerView.Adapter<MyScheduleAdapterMonth.Holder>() {
-    inner class Holder(private val binding: ScheduleItemMonthBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class Holder(binding: ScheduleItemMonthBinding) : RecyclerView.ViewHolder(binding.root) {
         val date = binding.calendarDate
         val recyclerView = binding.recyclerView
     }
@@ -34,5 +27,9 @@ class MyScheduleAdapterMonth(private val itemList: MutableList<MutableList<Sched
         holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
         val adapter = MyScheduleAdapterMonth2(itemList[position])
         holder.recyclerView.adapter = adapter
+    }
+
+    fun getItem(position: Int):MutableList<Schedule>{
+        return itemList[position]
     }
 }

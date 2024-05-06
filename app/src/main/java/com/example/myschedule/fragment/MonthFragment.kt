@@ -1,6 +1,5 @@
 package com.example.myschedule.fragment
 
-import android.app.Dialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
@@ -8,21 +7,18 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myschedule.adapter.MonthYearPickerDialog
+import com.example.myschedule.adapter.MyScheduleAdapterFragment
+import com.example.myschedule.customView.MonthYearPickerDialog
 import com.example.myschedule.adapter.MyScheduleAdapterMonth
 import com.example.myschedule.databinding.MonthLayoutBinding
-import com.example.myschedule.databinding.ScheduleItemMonthBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 import java.util.Locale
@@ -34,6 +30,7 @@ class MonthFragment :Fragment(){
     private lateinit var schedules : LiveData<List<Schedule>>
     private var scheduleObserver: Observer<List<Schedule>>? = null
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private var itemTouchListener: RecyclerView.OnItemTouchListener? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,14 +81,26 @@ class MonthFragment :Fragment(){
     private fun setCalendar() {
         val sortedSchedule : MutableList<MutableList<Schedule>> = sortingSchedules(schedules.value!!)
         val adapter = MyScheduleAdapterMonth(sortedSchedule)
-        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(),7)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+        val recyclerView = binding.recyclerView
+        if (itemTouchListener != null) {
+            recyclerView.removeOnItemTouchListener(itemTouchListener!!)
+        }
+        recyclerView.layoutManager = GridLayoutManager(requireContext(),7)
+        recyclerView.adapter = adapter
+        itemTouchListener = object : RecyclerView.OnItemTouchListener {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                val child = rv.findChildViewUnder(e.x, e.y)
-                if(child!=null){
-                    val position = rv.getChildAdapterPosition(child)
-                    Log.d("Onclick",position.toString())
+                if (e.action == MotionEvent.ACTION_DOWN) {
+                    val child = rv.findChildViewUnder(e.x, e.y)
+                    if (child != null) {
+                        val position = rv.getChildAdapterPosition(child)
+                        Log.d("Onclick", position.toString())
+                        val list = adapter.getItem(position)
+                        if(list.size!=0){
+                            val sheetAdapter = MyScheduleAdapterFragment(list)
+                            val bottomSheet = MyBottomSheetFragment(sheetAdapter)
+                            bottomSheet.show(requireActivity().supportFragmentManager, MyBottomSheetFragment.TAG)
+                        }
+                    }
                 }
                 return false
             }
@@ -101,7 +110,8 @@ class MonthFragment :Fragment(){
             override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
 
             }
-        })
+        }
+        itemTouchListener?.let { recyclerView.addOnItemTouchListener(it) }
     }
 
     private fun sortingSchedules(schedules: List<Schedule>): MutableList<MutableList<Schedule>> {
@@ -179,6 +189,11 @@ class MonthFragment :Fragment(){
         schedules.observe(viewLifecycleOwner, scheduleObserver!!)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        itemTouchListener?.let { binding.recyclerView.removeOnItemTouchListener(it) }
+        itemTouchListener = null
+    }
     fun refresh(){
         Log.d("Month","month called")
     }

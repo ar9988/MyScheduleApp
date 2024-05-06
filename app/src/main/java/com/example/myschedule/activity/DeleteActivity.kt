@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myschedule.adapter.MyScheduleAdapter
+import com.example.myschedule.adapter.MyScheduleAdapterDelete
 import com.example.myschedule.databinding.DeleteLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
@@ -25,7 +25,7 @@ class DeleteActivity : AppCompatActivity() {
     private lateinit var binding : DeleteLayoutBinding
     private val myViewModel: MyViewModel by viewModels()
     private lateinit var schedules : Array<List<Schedule>>
-    private lateinit var adapter : MyScheduleAdapter
+    private lateinit var adapter : MyScheduleAdapterDelete
     private lateinit var livedata1 :LiveData<List<Schedule>>
     private lateinit var livedata2 :LiveData<List<Schedule>>
     private lateinit var livedata3 :LiveData<List<Schedule>>
@@ -52,20 +52,20 @@ class DeleteActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyScheduleAdapter(emptyList())
+        adapter = MyScheduleAdapterDelete(emptyList())
         binding.recyclerView.adapter = adapter
         binding.DatePicker.setOnClickListener {
             val calendar = Calendar.getInstance()
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-            DatePickerDialog(this@DeleteActivity,16973935, { _, year, month, day ->
+            val currentYear = calendar.get(Calendar.YEAR)
+            val currentMonth = calendar.get(Calendar.MONTH)
+            val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+            DatePickerDialog(this@DeleteActivity, 16973935, { _, selectedYear, selectedMonth, selectedDay ->
                 run {
-                    binding.etYear.setText("$year")
-                    binding.etMonth.setText("${month+1}")
-                    binding.etDay.setText("$day")
+                    binding.etYear.setText("$selectedYear")
+                    binding.etMonth.setText("${selectedMonth + 1}")
+                    binding.etDay.setText("$selectedDay")
                 }
-            }, year, month, day).show()
+            }, currentYear, currentMonth, currentDay).show()
         }
         binding.SearchBtn.setOnClickListener{
             search()
@@ -73,7 +73,7 @@ class DeleteActivity : AppCompatActivity() {
         binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
             for(i:Int in 0 until adapter.itemCount) {
                 val viewHolder = binding.recyclerView.findViewHolderForAdapterPosition(i)
-                if (viewHolder != null && viewHolder is MyScheduleAdapter.ScheduleViewHolder) {
+                if (viewHolder != null && viewHolder is MyScheduleAdapterDelete.ScheduleViewHolder) {
                     viewHolder.binding.checkbox.isChecked = isChecked
                 }
             }
@@ -86,7 +86,7 @@ class DeleteActivity : AppCompatActivity() {
     private fun search() {
         val pos = binding.spinner.selectedItemPosition
         val etArray  = mutableListOf<String>()
-        var searchedSchedules: MutableList<Schedule> = mutableListOf()
+        val searchedSchedules: MutableList<Schedule> = mutableListOf()
         etArray.add( binding.etYear.text.toString())
         etArray.add( binding.etMonth.text.toString())
         etArray.add( binding.etDay.text.toString())
@@ -179,14 +179,13 @@ class DeleteActivity : AppCompatActivity() {
         }
         try {
             binding.recyclerView.layoutManager = LinearLayoutManager(this)
-            adapter = MyScheduleAdapter(searchedSchedules)
+            adapter = MyScheduleAdapterDelete(searchedSchedules)
             binding.recyclerView.adapter = adapter
         }catch (e : NullPointerException){
             Toast.makeText(this@DeleteActivity, "adapter error", Toast.LENGTH_SHORT).show()
         }
     }
     private fun delete(){
-        val selectedItemPosition = binding.spinner.selectedItemPosition
         val confirmationDialog = AlertDialog.Builder(this)
             .setTitle("일정 삭제")
             .setMessage("선택한 일정을 삭제하시겠습니까?")
@@ -196,7 +195,7 @@ class DeleteActivity : AppCompatActivity() {
                         myViewModel.deleteSchedule(schedule)
                     }
                 }
-                binding.recyclerView.adapter = MyScheduleAdapter(emptyList())
+                binding.recyclerView.adapter = MyScheduleAdapterDelete(emptyList())
                 Handler(Looper.getMainLooper()).postDelayed({
                     search()
                 }, 100)

@@ -1,14 +1,12 @@
-package com.example.myschedule.adapter
+package com.example.myschedule.customView
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import com.example.myschedule.R
-import java.util.Calendar
 import com.example.myschedule.databinding.MonthLayoutBinding
 
 class MonthYearPickerDialog(

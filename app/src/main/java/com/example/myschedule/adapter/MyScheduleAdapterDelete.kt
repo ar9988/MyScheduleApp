@@ -1,13 +1,12 @@
 package com.example.myschedule.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myschedule.databinding.ScheduleItemDeleteBinding
 import com.example.myschedule.db.Schedule
 
-class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapter.ScheduleViewHolder>(){
+class MyScheduleAdapterDelete(private val scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapterDelete.ScheduleViewHolder>(){
     private val checkedItems = HashSet<Schedule>()
     inner class ScheduleViewHolder(val binding: ScheduleItemDeleteBinding) : RecyclerView.ViewHolder(binding.root){
 
@@ -35,9 +34,6 @@ class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView
                 }
             }
         }
-        fun toggle(isChecked:Boolean){
-            this.binding.checkbox.isChecked = isChecked
-        }
 
     }
     fun toggleItemChecked(schedule: Schedule) {
@@ -62,8 +58,5 @@ class MyScheduleAdapter(private val scheduleList: List<Schedule>) : RecyclerView
 
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
         holder.bind(scheduleList[position])
-    }
-    fun updateDataAfterDeletion() {
-        this.notifyDataSetChanged()
     }
 }
