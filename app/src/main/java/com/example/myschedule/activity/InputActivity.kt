@@ -166,9 +166,12 @@ class InputActivity: AppCompatActivity()  {
                             Toast.makeText(this@InputActivity, "시간을 입력하세요", Toast.LENGTH_SHORT).show()
                             return@setOnClickListener
                         }
-                        // 시간처리
                         startTime = "$hour-$minute"
                         endTime = "$hour2-$minute2"
+                        if (startTime>endTime) {
+                            Toast.makeText(this@InputActivity, "옳바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
+                        }
                         state++
                         activateState(state)
                     }
@@ -179,19 +182,25 @@ class InputActivity: AppCompatActivity()  {
                             Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
                             return@setOnClickListener
                         }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            with(myViewModel) {
-                                insertSchedule(
-                                    Schedule(
-                                        0L,
-                                        type,
-                                        title,
-                                        content,
-                                        sdf.format(startDay.time),
-                                        sdf.format(endDay.time),
-                                        "${startTime}-${endTime}"
-                                    )
-                                )
+                        val tmp = Schedule(
+                            0L,
+                            type,
+                            title,
+                            content,
+                            sdf.format(startDay.time),
+                            sdf.format(endDay.time),
+                            "${startTime}-${endTime}"
+                        )
+                        val ans = conflictCheck(tmp)
+                        if(ans.first){
+                            Toast.makeText(this@InputActivity, "해당 시간대에 ${ans.second} 일정이 있습니다", Toast.LENGTH_SHORT).show()
+                            return@setOnClickListener
+                        }
+                        else{
+                            CoroutineScope(Dispatchers.IO).launch {
+                                with(myViewModel) {
+                                    insertSchedule(tmp)
+                                }
                             }
                         }
                         finish()
@@ -203,6 +212,22 @@ class InputActivity: AppCompatActivity()  {
                 onBackPressed()
             }
         }
+    }
+
+    private fun conflictCheck(tmp: Schedule): Pair<Boolean,String> {
+        var flag:Boolean = false
+        when(tmp.type){
+            0->{
+
+            }
+            1->{
+
+            }
+            2->{
+
+            }
+        }
+        return Pair(flag,"")
     }
 
     private fun activateState(s: Int) {

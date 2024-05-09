@@ -1,4 +1,4 @@
-package com.example.myschedule.adapter
+package com.example.myschedule.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -34,4 +34,5 @@ class MyScheduleAdapterFragment(private val scheduleList: List<Schedule>) : Recy
         val times = scheduleList[position].times.split("-")
         holder.times.text = "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
     }
+
 }

@@ -9,7 +9,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.recyclerview.widget.RecyclerView
         tools:listitem="@layout/schedule_item_month2"
-        android:background="@drawable/frame_border"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -27,5 +26,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/calendarDate"
-        android:text="0"/>
+        android:text=""/>
 </androidx.constraintlayout.widget.ConstraintLayout>

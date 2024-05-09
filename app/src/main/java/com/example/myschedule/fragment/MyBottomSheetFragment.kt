@@ -1,11 +1,12 @@
 package com.example.myschedule.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myschedule.adapter.MyScheduleAdapterFragment
+import com.example.myschedule.recyclerview.MyScheduleAdapterFragment
 import com.example.myschedule.databinding.BottomSheetLayoutBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -32,6 +33,7 @@ class MyBottomSheetFragment(val adapter:MyScheduleAdapterFragment) : BottomSheet
     }
 
     override fun onDestroyView() {
+        Log.d("fragment destroy","onDestroyView")
         super.onDestroyView()
         _binding = null
     }

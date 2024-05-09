@@ -1,4 +1,4 @@
-package com.example.myschedule.adapter
+package com.example.myschedule.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myschedule.databinding.ScheduleItemMonthBinding
 import com.example.myschedule.db.Schedule
 
-class MyScheduleAdapterMonth(private val itemList: MutableList<MutableList<Schedule>>): RecyclerView.Adapter<MyScheduleAdapterMonth.Holder>() {
+class MyScheduleAdapterMonth(private val itemList: MutableList<MutableList<Schedule>>,private val dayOfWeek: Int): RecyclerView.Adapter<MyScheduleAdapterMonth.Holder>() {
     inner class Holder(binding: ScheduleItemMonthBinding) : RecyclerView.ViewHolder(binding.root) {
         val date = binding.calendarDate
         val recyclerView = binding.recyclerView
@@ -23,10 +23,20 @@ class MyScheduleAdapterMonth(private val itemList: MutableList<MutableList<Sched
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.date.text = (position+1).toString()
-        holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
-        val adapter = MyScheduleAdapterMonth2(itemList[position])
-        holder.recyclerView.adapter = adapter
+        if(dayOfWeek!=1){
+            if(position!=0) {
+                holder.date.text = (position).toString()
+                holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
+                val adapter = MyScheduleAdapterMonth2(itemList[position])
+                holder.recyclerView.adapter = adapter
+            }
+        }
+        else{
+            holder.date.text = (position+1).toString()
+            holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
+            val adapter = MyScheduleAdapterMonth2(itemList[position])
+            holder.recyclerView.adapter = adapter
+        }
     }
 
     fun getItem(position: Int):MutableList<Schedule>{

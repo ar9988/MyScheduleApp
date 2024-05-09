@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myschedule.adapter.MyScheduleAdapterDelete
+import com.example.myschedule.recyclerview.MyScheduleAdapterDelete
 import com.example.myschedule.databinding.DeleteLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel

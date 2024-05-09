@@ -13,11 +13,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myschedule.adapter.MyScheduleAdapterFragment
+import com.example.myschedule.R
+import com.example.myschedule.recyclerview.MyScheduleAdapterFragment
 import com.example.myschedule.customView.MonthYearPickerDialog
-import com.example.myschedule.adapter.MyScheduleAdapterMonth
+import com.example.myschedule.recyclerview.MyScheduleAdapterMonth
 import com.example.myschedule.databinding.MonthLayoutBinding
 import com.example.myschedule.db.Schedule
+import com.example.myschedule.recyclerview.GridItemDecoration
 import com.example.myschedule.viewModel.MyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
@@ -80,12 +82,37 @@ class MonthFragment :Fragment(){
 
     private fun setCalendar() {
         val sortedSchedule : MutableList<MutableList<Schedule>> = sortingSchedules(schedules.value!!)
-        val adapter = MyScheduleAdapterMonth(sortedSchedule)
+        val calendar = Calendar.getInstance()
+        val items = binding.calendarTxt.text.split(" ")
+        val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
+        val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+        calendar.set(
+            currentYear,
+            currentMonth,
+            1
+        )
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        if(dayOfWeek!=1) sortedSchedule.add(0, mutableListOf())
+        val adapter = MyScheduleAdapterMonth(sortedSchedule,dayOfWeek)
         val recyclerView = binding.recyclerView
         if (itemTouchListener != null) {
             recyclerView.removeOnItemTouchListener(itemTouchListener!!)
         }
-        recyclerView.layoutManager = GridLayoutManager(requireContext(),7)
+        val layoutManager = GridLayoutManager(requireContext(),7)
+        if(dayOfWeek!=1) {
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position == 0) {
+                        dayOfWeek - 1
+                    } else {
+                        1
+                    }
+                }
+            }
+        }
+        recyclerView.layoutManager = layoutManager
+        if(recyclerView.itemDecorationCount>0) recyclerView.removeItemDecorationAt(0)
+        binding.recyclerView.addItemDecoration(GridItemDecoration(1,7-(dayOfWeek-1)))
         recyclerView.adapter = adapter
         itemTouchListener = object : RecyclerView.OnItemTouchListener {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
@@ -93,7 +120,6 @@ class MonthFragment :Fragment(){
                     val child = rv.findChildViewUnder(e.x, e.y)
                     if (child != null) {
                         val position = rv.getChildAdapterPosition(child)
-                        Log.d("Onclick", position.toString())
                         val list = adapter.getItem(position)
                         if(list.size!=0){
                             val sheetAdapter = MyScheduleAdapterFragment(list)
@@ -134,19 +160,19 @@ class MonthFragment :Fragment(){
                 sortedSchedule[i - 1].add(schedule)
             }
             else{
-                val sDay = if(sDate >= schedule.startDate) sDate else schedule.startDate
-                val eDay = if(sdf.format(calendar.time) <= schedule.endDate) sdf.format(calendar.time) else schedule.endDate
+                val sDay = (if(sDate >= schedule.startDate) sDate else schedule.startDate).split("-").map { it.toInt() }
+                val eDay = (if(sdf.format(calendar.time) <= schedule.endDate) sdf.format(calendar.time) else schedule.endDate).split("-").map { it.toInt() }
                 val calendar1 = Calendar.getInstance()
                 val calendar2 = Calendar.getInstance()
                 calendar1.set(
-                    sDay.split("-")[0].toInt(),
-                    sDay.split("-")[1].toInt()-1,
-                    sDay.split("-")[2].toInt()
+                    sDay[0],
+                    sDay[1]-1,
+                    sDay[2]
                 )
                 calendar2.set(
-                    eDay.split("-")[0].toInt(),
-                    eDay.split("-")[1].toInt()-1,
-                    eDay.split("-")[2].toInt(),
+                    eDay[0],
+                    eDay[1]-1,
+                    eDay[2],
                 )
                 while(calendar1.time<=calendar2.time){
                     val i = calendar1.get(Calendar.DAY_OF_MONTH)
@@ -193,6 +219,7 @@ class MonthFragment :Fragment(){
         super.onDestroyView()
         itemTouchListener?.let { binding.recyclerView.removeOnItemTouchListener(it) }
         itemTouchListener = null
+        scheduleObserver?.let { schedules.removeObserver(it) }
     }
     fun refresh(){
         Log.d("Month","month called")

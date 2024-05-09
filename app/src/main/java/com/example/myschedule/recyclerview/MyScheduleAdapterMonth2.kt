@@ -1,4 +1,4 @@
-package com.example.myschedule.adapter
+package com.example.myschedule.recyclerview
 
 import android.content.Context
 import android.view.LayoutInflater
