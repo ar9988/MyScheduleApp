@@ -44,4 +44,8 @@ class MyRepository(private val myDao: MyDAO) {
     fun getMonthSchedules(sDate: String, eDate: String): LiveData<List<Schedule>> {
         return myDao.getMonthSchedules(sDate, eDate)
     }
+
+    fun conflictCheck(type:Int,startTime:String,endTime:String): String? {
+        return myDao.conflictCheck(type,startTime,endTime)
+    }
 }

@@ -47,7 +47,7 @@ class circularSectorFormSchedule(
     private var centralAngle= 0F
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val times = schedule.times.split("-")
+        val times = schedule.startTime.split("-")+schedule.endTime.split("-")
         val startTime = (times[0].toFloat() * 60 + times[1].toFloat()) * 0.25
         val endTime = (times[2].toFloat() * 60 + times[3].toFloat()) * 0.25
         val sweepAngle = if (endTime > startTime) endTime - startTime else (24F * 60 * 0.25 - startTime) + endTime

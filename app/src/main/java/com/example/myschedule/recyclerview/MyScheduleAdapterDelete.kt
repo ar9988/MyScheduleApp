@@ -13,7 +13,7 @@ class MyScheduleAdapterDelete(private val scheduleList: List<Schedule>) : Recycl
         fun bind(schedule: Schedule) {
             binding.title.text = schedule.name
             binding.content.text = schedule.content
-            val times = schedule.times.split("-")
+            val times = schedule.startTime.split("-")+schedule.endTime.split("-")
             when(schedule.type){
                 0->{
                     binding.date.text = "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"

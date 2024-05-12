@@ -17,7 +17,9 @@ import com.example.myschedule.viewModel.MyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -101,109 +103,118 @@ class InputActivity: AppCompatActivity()  {
                 activateCalendar(2)
             }
             btnInput.setOnClickListener {
-                when (state) {
-                    0 -> {
-                        val yearText = binding.etYear.text.toString()
-                        val monthText = binding.etMonth.text.toString()
-                        val dayText = binding.etDay.text.toString()
-                        val yearText2 = binding.etYear2.text.toString()
-                        val monthText2 = binding.etMonth2.text.toString()
-                        val dayText2 = binding.etDay2.text.toString()
-                        when (type) {
-                            0 -> {
-                                state++
-                                activateState(state)
-                                startDay.set(0,0,0)
-                            }
-                            1 -> {
-                                if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty()) {
-                                    Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    startDay.set(
-                                        yearText.toInt(),
-                                        monthText.toInt() - 1,
-                                        dayText.toInt()
-                                    )
-                                    endDay.set(
-                                        0,
-                                        0,
-                                        0
-                                    )
+                CoroutineScope(Dispatchers.Main).launch {
+                    when (state) {
+                        0 -> {
+                            val yearText = binding.etYear.text.toString()
+                            val monthText = binding.etMonth.text.toString()
+                            val dayText = binding.etDay.text.toString()
+                            val yearText2 = binding.etYear2.text.toString()
+                            val monthText2 = binding.etMonth2.text.toString()
+                            val dayText2 = binding.etDay2.text.toString()
+                            when (type) {
+                                0 -> {
                                     state++
                                     activateState(state)
+                                    startDay.set(0,0,0)
                                 }
-                            }
-                            2 -> {
-                                if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty() || yearText2.isEmpty() || monthText2.isEmpty() || dayText2.isEmpty()) {
-                                    Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    startDay.set(
-                                        yearText.toInt(),
-                                        monthText.toInt() - 1,
-                                        dayText.toInt()
-                                    )
-                                    endDay.set(
-                                        yearText2.toInt(),
-                                        monthText2.toInt() - 1,
-                                        dayText2.toInt()
-                                    )
-                                    if (state == 2 && endDay.before(startDay)) {
-                                        Toast.makeText(this@InputActivity, "옳바른 기간을 입력하세요.", Toast.LENGTH_SHORT).show()
-                                        return@setOnClickListener
+                                1 -> {
+                                    if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty()) {
+                                        Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        startDay.set(
+                                            yearText.toInt(),
+                                            monthText.toInt() - 1,
+                                            dayText.toInt()
+                                        )
+                                        endDay.set(
+                                            0,
+                                            0,
+                                            0
+                                        )
+                                        state++
+                                        activateState(state)
                                     }
-                                    state++
-                                    activateState(state)
+                                }
+                                2 -> {
+                                    if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty() || yearText2.isEmpty() || monthText2.isEmpty() || dayText2.isEmpty()) {
+                                        Toast.makeText(this@InputActivity, "년, 월, 일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        startDay.set(
+                                            yearText.toInt(),
+                                            monthText.toInt() - 1,
+                                            dayText.toInt()
+                                        )
+                                        endDay.set(
+                                            yearText2.toInt(),
+                                            monthText2.toInt() - 1,
+                                            dayText2.toInt()
+                                        )
+                                        if (state == 2 && endDay.before(startDay)) {
+                                            Toast.makeText(this@InputActivity, "옳바른 기간을 입력하세요.", Toast.LENGTH_SHORT).show()
+                                            return@launch
+                                        }
+                                        state++
+                                        activateState(state)
+                                    }
                                 }
                             }
                         }
-                    }
-                    1 -> {
-                        val hour = binding.etHour1.text.toString()
-                        val minute = binding.etMinute1.text.toString()
-                        val hour2 = binding.etHour2.text.toString()
-                        val minute2 = binding.etMinute2.text.toString()
-                        if (hour.isEmpty() || minute.isEmpty() || hour2.isEmpty() || minute2.isEmpty()) {
-                            Toast.makeText(this@InputActivity, "시간을 입력하세요", Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
+                        1 -> {
+                            val hour = binding.etHour1.text.toString()
+                            val minute = binding.etMinute1.text.toString()
+                            val hour2 = binding.etHour2.text.toString()
+                            val minute2 = binding.etMinute2.text.toString()
+                            if (hour.isEmpty() || minute.isEmpty() || hour2.isEmpty() || minute2.isEmpty()) {
+                                Toast.makeText(this@InputActivity, "시간을 입력하세요", Toast.LENGTH_SHORT).show()
+                                return@launch
+                            }
+                            startTime = "$hour-$minute"
+                            endTime = "$hour2-$minute2"
+                            if (startTime>endTime) {
+                                Toast.makeText(this@InputActivity, "옳바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
+                                return@launch
+                            }
+                            state++
+                            activateState(state)
                         }
-                        startTime = "$hour-$minute"
-                        endTime = "$hour2-$minute2"
-                        if (startTime>endTime) {
-                            Toast.makeText(this@InputActivity, "옳바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
-                        }
-                        state++
-                        activateState(state)
-                    }
-                    2 -> {
-                        title = binding.etTitle.text.toString()
-                        content = binding.etContent.text.toString()
-                        if (title.isEmpty() || content.isEmpty()) {
-                            Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
-                        }
-                        val tmp = Schedule(
-                            0L,
-                            type,
-                            title,
-                            content,
-                            sdf.format(startDay.time),
-                            sdf.format(endDay.time),
-                            "${startTime}-${endTime}"
-                        )
-                        val ans = conflictCheck(tmp)
-                        if(ans.first){
-                            Toast.makeText(this@InputActivity, "해당 시간대에 ${ans.second} 일정이 있습니다", Toast.LENGTH_SHORT).show()
-                            return@setOnClickListener
-                        }
-                        else{
-                            CoroutineScope(Dispatchers.IO).launch {
-                                with(myViewModel) {
-                                    insertSchedule(tmp)
+                        2 -> {
+                            title = binding.etTitle.text.toString()
+                            content = binding.etContent.text.toString()
+                            if (title.isEmpty() || content.isEmpty()) {
+                                Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
+                                return@launch
+                            }
+                            val tmp = Schedule(
+                                0L,
+                                type,
+                                title,
+                                content,
+                                sdf.format(startDay.time),
+                                sdf.format(endDay.time),
+                                startTime,
+                                endTime
+                            )
+                            val ans = conflictCheck(type, startTime, endTime)
+                            if (ans.first) {
+                                Toast.makeText(this@InputActivity, "해당 시간대에 ${ans.second} 일정이 있습니다", Toast.LENGTH_SHORT).show()
+                            } else {
+                                val tmp = Schedule(
+                                    0L,
+                                    type,
+                                    title,
+                                    content,
+                                    sdf.format(startDay.time),
+                                    sdf.format(endDay.time),
+                                    startTime,
+                                    endTime
+                                )
+                                withContext(Dispatchers.IO) {
+                                    myViewModel.insertSchedule(tmp)
                                 }
+                                finish()
                             }
                         }
-                        finish()
                     }
                 }
             }
@@ -214,20 +225,20 @@ class InputActivity: AppCompatActivity()  {
         }
     }
 
-    private fun conflictCheck(tmp: Schedule): Pair<Boolean,String> {
+    private suspend fun conflictCheck(type:Int,startTime:String,endTime:String): Pair<Boolean, String?> {
+        var item:String? = null
         var flag:Boolean = false
-        when(tmp.type){
-            0->{
 
-            }
-            1->{
-
-            }
-            2->{
-
-            }
+        val deferred = CoroutineScope(Dispatchers.IO).async {
+            item = myViewModel.conflictCheck(type, startTime, endTime)
+            flag = item != null
+            Pair(flag, item)
         }
-        return Pair(flag,"")
+
+        val (resultFlag, resultItem) = deferred.await()
+
+
+        return Pair(resultFlag, resultItem)
     }
 
     private fun activateState(s: Int) {

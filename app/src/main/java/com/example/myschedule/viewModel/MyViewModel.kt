@@ -43,4 +43,8 @@ class MyViewModel @Inject constructor(
     fun getMonthSchedules(sDate:String, eDate:String): LiveData<List<Schedule>> {
         return repository.getMonthSchedules(sDate,eDate)
     }
+
+    fun conflictCheck(type:Int,startTime:String,endTime:String): String? {
+        return repository.conflictCheck(type,startTime,endTime)
+    }
 }

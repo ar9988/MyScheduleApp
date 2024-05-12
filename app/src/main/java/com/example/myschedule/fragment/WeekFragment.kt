@@ -2,7 +2,6 @@ package com.example.myschedule.fragment
 
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,47 +77,48 @@ class WeekFragment : Fragment(){
             when (i) {
                 0 -> {
                     for((j,frame) in frames.withIndex()){
-                        val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color,frames[j]) }
+                        val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
                         frame.addView(v)
                         v?.let { scheduleLists[i].add(Pair(it,j)) }
                     }
                 }
                 1 -> {
                     val calendar1 = Calendar.getInstance()
+                    val startDate = schedule.startDate.split("-").map { it.toInt() }
                     calendar1.set(
-                        schedule.startDate.split("-")[0].toInt(),
-                        schedule.startDate.split("-")[1].toInt()-1,
-                        schedule.startDate.split("-")[2].toInt()
+                        startDate[0],
+                        startDate[1]-1,
+                        startDate[2]
                     )
                     var frameIdx = calendar1.get(Calendar.DAY_OF_WEEK) - 2
                     if(frameIdx < 0) {
                         frameIdx += 7
                     }
-                    val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color,frames[frameIdx]) }
+                    val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
                     frames[frameIdx].addView(v)
                     v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
                 }
                 2 -> {
-                    val sDay = if(sDate >= schedule.startDate) sDate else schedule.startDate
-                    val eDay = if(eDate <= schedule.endDate) eDate else schedule.endDate
+                    val sDay = (if(sDate >= schedule.startDate) sDate else schedule.startDate).split("-").map { it.toInt() }
+                    val eDay = (if(eDate <= schedule.endDate) eDate else schedule.endDate).split("-").map { it.toInt() }
                     val calendar1 = Calendar.getInstance()
                     val calendar2 = Calendar.getInstance()
                     calendar1.set(
-                        sDay.split("-")[0].toInt(),
-                        sDay.split("-")[1].toInt()-1,
-                        sDay.split("-")[2].toInt()
+                        sDay[0],
+                        sDay[1]-1,
+                        sDay[2]
                     )
                     calendar2.set(
-                        eDay.split("-")[0].toInt(),
-                        eDay.split("-")[1].toInt()-1,
-                        eDay.split("-")[2].toInt(),
+                        eDay[0],
+                        eDay[1]-1,
+                        eDay[2],
                     )
                     var frameIdx = calendar1.get(Calendar.DAY_OF_WEEK) - 2
                     if(frameIdx < 0) {
                         frameIdx += 7
                     }
                     while(calendar1.time<=calendar2.time){
-                        val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color,frames[frameIdx]) }
+                        val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
                         frames[frameIdx].addView(v)
                         v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
                         calendar1.add(Calendar.DAY_OF_MONTH, 1)

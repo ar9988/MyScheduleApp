@@ -11,6 +11,7 @@ data class Schedule (
     val content: String,
     val startDate: String,
     val endDate:String,
-    val times: String
+    val startTime: String,
+    val endTime: String
 )
 

@@ -6,9 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
 import com.example.myschedule.db.Schedule
 
 class rectangleFormSchedule(
@@ -16,10 +14,9 @@ class rectangleFormSchedule(
     attrs: AttributeSet?,
     val schedule: Schedule,
     private val colorCode: Int,
-    private val frameLayout: FrameLayout
 ) : View(context, attrs) {
     private val paint = Paint()
-    private val times = schedule.times.split("-")
+    private val times = schedule.startTime.split("-")+schedule.endTime.split("-")
     private val startTime = times[0].toInt()*60+times[1].toInt()
     private val endTime = times[2].toInt()*60+times[3].toInt()
     private val paint2 = Paint().apply {

@@ -61,6 +61,7 @@ class DayFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         binding= DayLayoutBinding.inflate(inflater)
+        rotationAngle = savedInstanceState?.getFloat("rotationAngle") ?: 0f
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
         val date = sdf.format(calendar.time)
@@ -68,6 +69,7 @@ class DayFragment : Fragment(){
         val daySchedule = myViewModel.getScheduleByDateAndType(date,1)
         val periodScheduleLiveData = myViewModel.getScheduleByDateAndType(date,2)
         val clock: ConstraintLayout = binding.clockLayout
+        Log.d("angle",rotationAngle.toString())
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
             removeSchedules(0,frame)
             addSchedules(0,frame,dailySchedules)
@@ -200,7 +202,7 @@ class DayFragment : Fragment(){
             val selectedItem = selectedItems[index]
             val itemName = selectedItem.first.schedule.name
             val itemContent = selectedItem.first.schedule.content
-            val times = selectedItem.first.schedule.times.split("-")
+            val times = selectedItem.first.schedule.startTime.split("-")+selectedItem.first.schedule.endTime.split("-")
             val startTime = times[0]+"시"+times[1]+"분"
             val endTime = times[2]+"시"+times[3]+"분"
             AlertDialog.Builder(requireContext())
@@ -215,7 +217,7 @@ class DayFragment : Fragment(){
             val selectedItem = selectedItems[0]
             val itemName = selectedItem.first.schedule.name
             val itemContent = selectedItem.first.schedule.content
-            val times = selectedItem.first.schedule.times.split("-")
+            val times = selectedItem.first.schedule.startTime.split("-")+selectedItem.first.schedule.endTime.split("-")
             val startTime = times[0]+"시"+times[1]+"분"
             val endTime = times[2]+"시"+times[3]+"분"
             AlertDialog.Builder(requireContext())
@@ -244,7 +246,6 @@ class DayFragment : Fragment(){
     }
     override fun onResume() {
         super.onResume()
-        rotationAngle = 0F
         colorIndex = 0
         refreshIdx = 0
     }
@@ -257,5 +258,6 @@ class DayFragment : Fragment(){
         }
         refreshIdx++
     }
+
 }
 

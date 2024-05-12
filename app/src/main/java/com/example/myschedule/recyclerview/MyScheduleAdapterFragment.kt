@@ -28,10 +28,9 @@ class MyScheduleAdapterFragment(private val scheduleList: List<Schedule>) : Recy
     }
 
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
-        //holder.bind(scheduleList[position])
         holder.title.text = scheduleList[position].name
         holder.content.text = scheduleList[position].content
-        val times = scheduleList[position].times.split("-")
+        val times = scheduleList[position].startTime.split("-")+scheduleList[position].endTime.split("-")
         holder.times.text = "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
     }
 

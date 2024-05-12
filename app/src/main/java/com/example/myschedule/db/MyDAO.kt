@@ -41,4 +41,8 @@ interface MyDAO {
 
     @Query("SELECT * FROM Schedule WHERE (type == 1 AND startDate BETWEEN :sDate AND :eDate) OR (type == 2 AND ((startDate BETWEEN :sDate AND :eDate) OR (endDate BETWEEN :sDate AND :eDate) OR (:sDate BETWEEN startDate AND endDate) OR (:eDate BETWEEN startDate AND endDate)))")
     fun getMonthSchedules(sDate: String, eDate: String): LiveData<List<Schedule>>
+
+    @Query("SELECT name FROM Schedule WHERE (type == :type) AND ((startTime BETWEEN :searchStartTime AND :searchEndTime) OR (endTime BETWEEN :searchStartTime AND :searchEndTime) OR (:searchStartTime BETWEEN startTime AND endTime) OR (:searchEndTime BETWEEN startTime AND endTime))")
+    fun conflictCheck(type: Int, searchStartTime: String, searchEndTime: String): String?
+
 }
