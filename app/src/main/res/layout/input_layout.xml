@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.1">
+            app:layout_constraintVertical_bias="0.02">
 
             <RadioButton
                 android:layout_weight="1"
@@ -48,6 +48,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         </RadioGroup>
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:dropDownWidth="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.2"/>
+
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.Material3.Button.IconButton.Filled"

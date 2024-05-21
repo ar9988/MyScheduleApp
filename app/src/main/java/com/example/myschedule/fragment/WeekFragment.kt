@@ -2,6 +2,7 @@ package com.example.myschedule.fragment
 
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,10 +77,22 @@ class WeekFragment : Fragment(){
             colorIndex++
             when (i) {
                 0 -> {
-                    for((j,frame) in frames.withIndex()){
+                    //요일별로 분류후 넣기
+                    if(schedule.startDate == "0"){
+                        for((j,frame) in frames.withIndex()){
+                            val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
+                            frame.addView(v)
+                            v?.let { scheduleLists[i].add(Pair(it,j)) }
+                        }
+                    }
+                    else{
+                        var frameIdx = schedule.startDate.toInt()-2
+                        if(frameIdx < 0) {
+                            frameIdx += 7
+                        }
                         val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
-                        frame.addView(v)
-                        v?.let { scheduleLists[i].add(Pair(it,j)) }
+                        frames[frameIdx].addView(v)
+                        v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
                     }
                 }
                 1 -> {

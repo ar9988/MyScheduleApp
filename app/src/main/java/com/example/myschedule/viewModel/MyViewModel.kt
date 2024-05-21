@@ -47,4 +47,12 @@ class MyViewModel @Inject constructor(
     fun conflictCheck(type:Int,startTime:String,endTime:String): String? {
         return repository.conflictCheck(type,startTime,endTime)
     }
+
+    fun getSchedulesByDayOfWeek(dayOfWeek: Int): LiveData<List<Schedule>> {
+        return repository.getSchedulesByDayOfWeek(dayOfWeek);
+    }
+
+    fun conflictCheck2(dayOfWeek: Int, startTime: String, endTime: String): String? {
+        return repository.conflictCheck2(dayOfWeek,startTime,endTime)
+    }
 }

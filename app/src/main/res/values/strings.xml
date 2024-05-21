@@ -40,8 +40,16 @@
     <string name="daily_schedule">일일 일정</string>
     <string name="period_schedule">기간 일정</string>
     <string name="date_schedule">하루 일정</string>
-    <string name="rd_btn1">일일</string>
+    <string name="rd_btn1">반복</string>
     <string name="rd_btn2">일회성</string>
     <string name="rd_btn3">기간</string>
     <string name="confirm">확인</string>
+    <string name="monday">월</string>
+    <string name="tuesday">화</string>
+    <string name="wednesday">수</string>
+    <string name="thursday">목</string>
+    <string name="friday">금</string>
+    <string name="saturday">토</string>
+    <string name="sunday">일</string>
+    <string name="everyday">일일</string>
 </resources>

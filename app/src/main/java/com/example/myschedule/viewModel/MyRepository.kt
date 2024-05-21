@@ -1,5 +1,6 @@
 package com.example.myschedule.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.myschedule.db.MyDAO
 import com.example.myschedule.db.Schedule
@@ -48,4 +49,16 @@ class MyRepository(private val myDao: MyDAO) {
     fun conflictCheck(type:Int,startTime:String,endTime:String): String? {
         return myDao.conflictCheck(type,startTime,endTime)
     }
+
+    fun getSchedulesByDayOfWeek(dayOfWeek: Int): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByDayOfWeek(dayOfWeek.toString())
+    }
+
+    fun conflictCheck2(dayOfWeek: Int, startTime: String, endTime: String): String? {
+        if(dayOfWeek==0){
+            return myDao.conflictCheck3(startTime,endTime)
+        }
+        return myDao.conflictCheck2(dayOfWeek,startTime,endTime)
+    }
+
 }

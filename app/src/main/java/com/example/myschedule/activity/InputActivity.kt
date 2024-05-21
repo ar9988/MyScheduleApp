@@ -4,13 +4,16 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.myschedule.R
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
@@ -20,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.DayOfWeek
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -33,6 +37,7 @@ class InputActivity: AppCompatActivity()  {
     private lateinit var startTime:String
     private lateinit var endTime:String
     private var state = 0
+    private var dayOfWeek = 0
     private var type=0
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private lateinit var frames:Array<ConstraintLayout>
@@ -44,6 +49,15 @@ class InputActivity: AppCompatActivity()  {
         activateState(0)
         setupListeners()
         deactivateCalendar()
+        activateCalendar(0)
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.week_list,
+            android.R.layout.simple_spinner_dropdown_item
+        ).also { arrayAdapter ->
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinner.adapter = arrayAdapter
+        }
     }
 
     private fun setupListeners() {
@@ -91,16 +105,17 @@ class InputActivity: AppCompatActivity()  {
             rgBtn1.setOnClickListener {
                 type=0
                 deactivateCalendar()
+                activateCalendar(type)
             }
             rgBtn2.setOnClickListener {
                 type=1
                 deactivateCalendar()
-                activateCalendar(1)
+                activateCalendar(type)
             }
             rgBtn3.setOnClickListener {
                 type=2
                 deactivateCalendar()
-                activateCalendar(2)
+                activateCalendar(type)
             }
             btnInput.setOnClickListener {
                 CoroutineScope(Dispatchers.Main).launch {
@@ -116,7 +131,7 @@ class InputActivity: AppCompatActivity()  {
                                 0 -> {
                                     state++
                                     activateState(state)
-                                    startDay.set(0,0,0)
+                                    dayOfWeek = spinner.selectedItemPosition
                                 }
                                 1 -> {
                                     if (yearText.isEmpty() || monthText.isEmpty() || dayText.isEmpty()) {
@@ -185,34 +200,43 @@ class InputActivity: AppCompatActivity()  {
                                 Toast.makeText(this@InputActivity, "올바른 일정을 입력하세요", Toast.LENGTH_SHORT).show()
                                 return@launch
                             }
-                            val tmp = Schedule(
-                                0L,
-                                type,
-                                title,
-                                content,
-                                sdf.format(startDay.time),
-                                sdf.format(endDay.time),
-                                startTime,
-                                endTime
-                            )
                             val ans = conflictCheck(type, startTime, endTime)
                             if (ans.first) {
                                 Toast.makeText(this@InputActivity, "해당 시간대에 ${ans.second} 일정이 있습니다", Toast.LENGTH_SHORT).show()
                             } else {
-                                val tmp = Schedule(
-                                    0L,
-                                    type,
-                                    title,
-                                    content,
-                                    sdf.format(startDay.time),
-                                    sdf.format(endDay.time),
-                                    startTime,
-                                    endTime
-                                )
-                                withContext(Dispatchers.IO) {
-                                    myViewModel.insertSchedule(tmp)
+                                if(type == 0){
+                                    Log.d("input",dayOfWeek.toString());
+                                    val tmp = Schedule(
+                                        0L,
+                                        0,
+                                        title,
+                                        content,
+                                        dayOfWeek.toString(),
+                                        "",
+                                        startTime,
+                                        endTime
+                                    )
+                                    withContext(Dispatchers.IO) {
+                                        myViewModel.insertSchedule(tmp)
+                                    }
+                                    finish()
                                 }
-                                finish()
+                                else{
+                                    val tmp = Schedule(
+                                        0L,
+                                        type,
+                                        title,
+                                        content,
+                                        sdf.format(startDay.time),
+                                        sdf.format(endDay.time),
+                                        startTime,
+                                        endTime
+                                    )
+                                    withContext(Dispatchers.IO) {
+                                        myViewModel.insertSchedule(tmp)
+                                    }
+                                    finish()
+                                }
                             }
                         }
                     }
@@ -228,11 +252,17 @@ class InputActivity: AppCompatActivity()  {
     private suspend fun conflictCheck(type:Int,startTime:String,endTime:String): Pair<Boolean, String?> {
         var item:String? = null
         var flag:Boolean = false
-
         val deferred = CoroutineScope(Dispatchers.IO).async {
-            item = myViewModel.conflictCheck(type, startTime, endTime)
-            flag = item != null
-            Pair(flag, item)
+            if(type==0){
+                item = myViewModel.conflictCheck2(dayOfWeek, startTime, endTime)
+                flag = item != null
+                Pair(flag, item)
+            }
+            else{
+                item = myViewModel.conflictCheck(type, startTime, endTime)
+                flag = item != null
+                Pair(flag, item)
+            }
         }
 
         val (resultFlag, resultItem) = deferred.await()
@@ -258,46 +288,50 @@ class InputActivity: AppCompatActivity()  {
         }
     }
     private fun deactivateCalendar(){
-        binding.datePicker.isEnabled=false
-        binding.etYear.isEnabled=false
-        binding.etMonth.isEnabled=false
-        binding.etDay.isEnabled=false
-        binding.datePicker2.isEnabled=false
-        binding.etYear2.isEnabled=false
-        binding.etMonth2.isEnabled=false
-        binding.etDay2.isEnabled=false
-        binding.textView.isEnabled=false
-        binding.textView2.isEnabled=false
-        binding.textView3.isEnabled=false
-        binding.textView10.isEnabled=false
-        binding.textView11.isEnabled=false
-        binding.textView12.isEnabled=false
+        binding.spinner.visibility = View.INVISIBLE
+        binding.datePicker.visibility = View.INVISIBLE
+        binding.etYear.visibility = View.INVISIBLE
+        binding.etMonth.visibility = View.INVISIBLE
+        binding.etDay.visibility = View.INVISIBLE
+        binding.datePicker2.visibility = View.INVISIBLE
+        binding.etYear2.visibility = View.INVISIBLE
+        binding.etMonth2.visibility = View.INVISIBLE
+        binding.etDay2.visibility = View.INVISIBLE
+        binding.textView.visibility = View.INVISIBLE
+        binding.textView2.visibility = View.INVISIBLE
+        binding.textView3.visibility = View.INVISIBLE
+        binding.textView10.visibility = View.INVISIBLE
+        binding.textView11.visibility = View.INVISIBLE
+        binding.textView12.visibility = View.INVISIBLE
     }
     private fun activateCalendar(i: Int){
-        if(i==2){
-            binding.datePicker.isEnabled=true
-            binding.etYear.isEnabled=true
-            binding.etMonth.isEnabled=true
-            binding.etDay.isEnabled=true
-            binding.datePicker2.isEnabled=true
-            binding.etYear2.isEnabled=true
-            binding.etMonth2.isEnabled=true
-            binding.etDay2.isEnabled=true
-            binding.textView.isEnabled=true
-            binding.textView2.isEnabled=true
-            binding.textView3.isEnabled=true
-            binding.textView10.isEnabled=true
-            binding.textView11.isEnabled=true
-            binding.textView12.isEnabled=true
+        if(i==0){
+            binding.spinner.visibility = View.VISIBLE
+        }
+        else if(i==2){
+            binding.datePicker.visibility = View.VISIBLE
+            binding.etYear.visibility = View.VISIBLE
+            binding.etMonth.visibility = View.VISIBLE
+            binding.etDay.visibility = View.VISIBLE
+            binding.datePicker2.visibility = View.VISIBLE
+            binding.etYear2.visibility = View.VISIBLE
+            binding.etMonth2.visibility = View.VISIBLE
+            binding.etDay2.visibility = View.VISIBLE
+            binding.textView.visibility = View.VISIBLE
+            binding.textView2.visibility = View.VISIBLE
+            binding.textView3.visibility = View.VISIBLE
+            binding.textView10.visibility = View.VISIBLE
+            binding.textView11.visibility = View.VISIBLE
+            binding.textView12.visibility = View.VISIBLE
         }
         else{
-            binding.datePicker.isEnabled=true
-            binding.etYear.isEnabled=true
-            binding.etMonth.isEnabled=true
-            binding.etDay.isEnabled=true
-            binding.textView.isEnabled=true
-            binding.textView2.isEnabled=true
-            binding.textView3.isEnabled=true
+            binding.datePicker.visibility = View.VISIBLE
+            binding.etYear.visibility = View.VISIBLE
+            binding.etMonth.visibility = View.VISIBLE
+            binding.etDay.visibility = View.VISIBLE
+            binding.textView.visibility = View.VISIBLE
+            binding.textView2.visibility = View.VISIBLE
+            binding.textView3.visibility = View.VISIBLE
         }
     }
 }

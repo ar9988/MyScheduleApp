@@ -18,49 +18,49 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="월"
+            android:text="@string/monday"
             android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="화"
+            android:text="@string/tuesday"
             android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="수"
+            android:text="@string/wednesday"
             android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="목"
+            android:text="@string/thursday"
             android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="금"
+            android:text="@string/friday"
             android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="토"
+            android:text="@string/saturday"
             android:gravity="center" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="일"
+            android:text="@string/sunday"
             android:gravity="center" />
 
     </LinearLayout>

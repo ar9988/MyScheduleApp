@@ -65,12 +65,14 @@ class DayFragment : Fragment(){
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
         val date = sdf.format(calendar.time)
-        val dailyScheduleLiveData = myViewModel.getSchedulesByType(0)
+        //val dailyScheduleLiveData = myViewModel.getSchedulesByType(0)
+        Log.d("dow",calendar.get(Calendar.DAY_OF_WEEK).toString())
+        val dailyScheduleLiveData = myViewModel.getSchedulesByDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK))
         val daySchedule = myViewModel.getScheduleByDateAndType(date,1)
         val periodScheduleLiveData = myViewModel.getScheduleByDateAndType(date,2)
         val clock: ConstraintLayout = binding.clockLayout
-        Log.d("angle",rotationAngle.toString())
         dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
+            Log.d("data",dailySchedules.toString())
             removeSchedules(0,frame)
             addSchedules(0,frame,dailySchedules)
         }
