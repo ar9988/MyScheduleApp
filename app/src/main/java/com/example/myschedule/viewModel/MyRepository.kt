@@ -61,4 +61,29 @@ class MyRepository(private val myDao: MyDAO) {
         return myDao.conflictCheck2(dayOfWeek,startTime,endTime)
     }
 
+    fun getSchedulesByTypeAndTitle(type: Int, title: String): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByTypeAndTitle(type,title)
+    }
+
+    fun getSchedulesByTypeAndContents(type: Int, content: String): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByTypeAndContents(type,content)
+    }
+
+    fun getSchedulesByTypeAndDateAndTitle(type: Int, date: String, title: String): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByTypeAndDateAndTitle(type,date,title)
+    }
+
+    fun getSchedulesByTypeAndDateAndContents(type: Int, date: String, contents: String): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByTypeAndDateAndContents(type,date,contents)
+    }
+
+    fun getSchedulesByTypeAndTitleAndContents(type: Int, title: String, contents: String): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByTypeAndTitleAndContents(type,title,contents)
+    }
+
+    fun getSchedulesByTypeAndDateAndTitleAndContents(type: Int, date: String, title: String, contents: String): LiveData<List<Schedule>> {
+        return myDao.getSchedulesByTypeAndDateAndTitleAndContents(type,date,title,contents)
+    }
+
+
 }

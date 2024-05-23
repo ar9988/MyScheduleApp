@@ -54,5 +54,28 @@ interface MyDAO {
     @Query("SELECT name FROM Schedule WHERE (type == 0) AND ((startTime BETWEEN :searchStartTime AND :searchEndTime) OR (endTime BETWEEN :searchStartTime AND :searchEndTime) OR (:searchStartTime BETWEEN startTime AND endTime) OR (:searchEndTime BETWEEN startTime AND endTime))")
     fun conflictCheck3(searchStartTime: String, searchEndTime: String): String?
 
+    @Query("SELECT * FROM Schedule WHERE (type == :type) AND name LIKE '%' || :title || '%'")
+    fun getSchedulesByTypeAndTitle(type: Int, title: String): LiveData<List<Schedule>>
+
+    @Query("SELECT * FROM Schedule WHERE (type == :type) AND content LIKE '%' || :contents || '%'")
+    fun getSchedulesByTypeAndContents(type: Int, contents: String): LiveData<List<Schedule>>
+
+    @Query("SELECT * FROM Schedule WHERE (type == :type) AND name LIKE '%' || :title || '%' AND (:date BETWEEN startDate AND endDate)")
+    fun getSchedulesByTypeAndDateAndTitle(type: Int, date: String, title: String): LiveData<List<Schedule>>
+
+    @Query("SELECT * FROM Schedule WHERE (type == :type) AND content LIKE '%' || :contents || '%' AND (:date BETWEEN startDate AND endDate)")
+    fun getSchedulesByTypeAndDateAndContents(type: Int, date: String, contents: String): LiveData<List<Schedule>>
+
+    @Query("SELECT * FROM Schedule WHERE (type == :type) AND name LIKE '%' || :title || '%' AND content LIKE '%' || :contents || '%'")
+    fun getSchedulesByTypeAndTitleAndContents(type: Int, title: String, contents: String): LiveData<List<Schedule>>
+
+    @Query("SELECT * FROM Schedule WHERE (type == :type) AND name LIKE '%' || :title || '%' AND (:date BETWEEN startDate AND endDate) AND content LIKE '%' || :contents || '%'")
+    fun getSchedulesByTypeAndDateAndTitleAndContents(
+        type: Int,
+        date: String,
+        title: String,
+        contents: String
+    ): LiveData<List<Schedule>>
+
 
 }

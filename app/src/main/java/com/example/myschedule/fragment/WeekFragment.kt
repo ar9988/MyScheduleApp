@@ -77,7 +77,6 @@ class WeekFragment : Fragment(){
             colorIndex++
             when (i) {
                 0 -> {
-                    //요일별로 분류후 넣기
                     if(schedule.startDate == "0"){
                         for((j,frame) in frames.withIndex()){
                             val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }

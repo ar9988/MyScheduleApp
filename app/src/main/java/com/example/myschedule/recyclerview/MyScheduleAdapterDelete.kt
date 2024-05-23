@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myschedule.databinding.ScheduleItemDeleteBinding
 import com.example.myschedule.db.Schedule
 
-class MyScheduleAdapterDelete(private val scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapterDelete.ScheduleViewHolder>(){
+class MyScheduleAdapterDelete(private var scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapterDelete.ScheduleViewHolder>(){
     private val checkedItems = HashSet<Schedule>()
     inner class ScheduleViewHolder(val binding: ScheduleItemDeleteBinding) : RecyclerView.ViewHolder(binding.root){
 
@@ -58,5 +58,10 @@ class MyScheduleAdapterDelete(private val scheduleList: List<Schedule>) : Recycl
 
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
         holder.bind(scheduleList[position])
+    }
+
+    fun updateData(newDataset : List<Schedule>){
+        scheduleList = newDataset
+        notifyDataSetChanged()
     }
 }
