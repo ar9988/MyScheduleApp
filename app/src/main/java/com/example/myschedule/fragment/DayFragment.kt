@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -29,7 +28,7 @@ import kotlin.math.atan2
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
     private val myViewModel: MyViewModel by viewModels()
-    private val scheduleLists: MutableList<MutableList<circularSectorFormSchedule>> = MutableList(3) { mutableListOf() }
+    private val scheduleLists: MutableList<MutableList<circularSectorFormSchedule>> = MutableList(4) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
     private var calendar = Calendar.getInstance()
     private var prevX = 0f
@@ -65,22 +64,12 @@ class DayFragment : Fragment(){
         val frame: FrameLayout = binding.watchCenter
         val touchScreen: FrameLayout = binding.touchScreen
         val date = sdf.format(calendar.time)
-        val dailyScheduleLiveData = myViewModel.getSchedulesByDayOfWeek(calendar.get(Calendar.DAY_OF_WEEK))
-        val daySchedule = myViewModel.getScheduleByDateAndType(date,1)
-        val periodScheduleLiveData = myViewModel.getScheduleByDateAndType(date,2)
+        val scheduleData = myViewModel.getDayFragmentData(date,calendar.get(Calendar.DAY_OF_WEEK))
+        scheduleData.observe(viewLifecycleOwner){
+            removeSchedules(frame)
+            addSchedules(frame,it)
+        }
         val clock: ConstraintLayout = binding.clockLayout
-        dailyScheduleLiveData.observe(viewLifecycleOwner) { dailySchedules ->
-            removeSchedules(0,frame)
-            addSchedules(0,frame,dailySchedules)
-        }
-        daySchedule.observe(viewLifecycleOwner){schedules ->
-            removeSchedules(1,frame)
-            addSchedules(1,frame,schedules)
-        }
-        periodScheduleLiveData.observe(viewLifecycleOwner){schedules ->
-            removeSchedules(2,frame)
-            addSchedules(2,frame,schedules)
-        }
         touchScreen.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -143,22 +132,25 @@ class DayFragment : Fragment(){
         return binding.root
     }
 
-    private fun addSchedules(i: Int, frame: FrameLayout, schedules: List<Schedule>) {
-        for (schedule in schedules) {
+    private fun addSchedules(frame: FrameLayout, schedules: List<Schedule>) {
+        for(item in schedules){
             val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
             val color = ContextCompat.getColor(requireContext(), colorResourceId)
             colorIndex++
-            val v : circularSectorFormSchedule? = context?.let { circularSectorFormSchedule(it,attrs = null,schedule,color,binding) }
+            val v : circularSectorFormSchedule? = context?.let { circularSectorFormSchedule(it,attrs = null,item,color,binding) }
             frame.addView(v)
-            v?.let { scheduleLists[i].add(it) }
+            if(item.type==0 && item.startDate != "0") v?.let { scheduleLists[3].add(it) }
+            v?.let{scheduleLists[item.type].add(it)}
         }
     }
 
-    private fun removeSchedules(i: Int, frame: FrameLayout) {
-        for (timePiece in scheduleLists[i]) {
-            frame.removeView(timePiece)
+    private fun removeSchedules(frame: FrameLayout) {
+        for(i in 0 until 4){
+            for (timePiece in scheduleLists[i]) {
+                frame.removeView(timePiece)
+            }
+            scheduleLists[i].clear()
         }
-        scheduleLists[i].clear()
     }
     private fun clickEvent(binding: DayLayoutBinding,event: MotionEvent){
         val touchScreen = binding.touchScreen
@@ -250,7 +242,7 @@ class DayFragment : Fragment(){
     }
 
     fun refresh(){
-        refreshIdx %= 3
+        refreshIdx %= 4
         for (timePiece in scheduleLists[refreshIdx]) {
             binding.watchCenter.removeView(timePiece)
             binding.watchCenter.addView(timePiece)

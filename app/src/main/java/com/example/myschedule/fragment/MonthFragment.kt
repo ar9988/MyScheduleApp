@@ -2,7 +2,6 @@ package com.example.myschedule.fragment
 
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -13,7 +12,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myschedule.R
 import com.example.myschedule.recyclerview.MyScheduleAdapterFragment
 import com.example.myschedule.customView.MonthYearPickerDialog
 import com.example.myschedule.recyclerview.MyScheduleAdapterMonth
@@ -33,6 +31,7 @@ class MonthFragment :Fragment(){
     private var scheduleObserver: Observer<List<Schedule>>? = null
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private var itemTouchListener: RecyclerView.OnItemTouchListener? = null
+    private var myAdapter : MyScheduleAdapterMonth? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -94,6 +93,7 @@ class MonthFragment :Fragment(){
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         if(dayOfWeek!=1) sortedSchedule.add(0, mutableListOf())
         val adapter = MyScheduleAdapterMonth(sortedSchedule,dayOfWeek)
+        myAdapter = adapter
         val recyclerView = binding.recyclerView
         if (itemTouchListener != null) {
             recyclerView.removeOnItemTouchListener(itemTouchListener!!)
@@ -114,6 +114,7 @@ class MonthFragment :Fragment(){
         if(recyclerView.itemDecorationCount>0) recyclerView.removeItemDecorationAt(0)
         binding.recyclerView.addItemDecoration(GridItemDecoration(1,7-(dayOfWeek-1)))
         recyclerView.adapter = adapter
+        adapter.setParentRecyclerView(recyclerView)
         itemTouchListener = object : RecyclerView.OnItemTouchListener {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
                 if (e.action == MotionEvent.ACTION_DOWN) {
@@ -222,6 +223,6 @@ class MonthFragment :Fragment(){
         scheduleObserver?.let { schedules.removeObserver(it) }
     }
     fun refresh(){
-        Log.d("Month","month called")
+        myAdapter?.shiftItems()
     }
 }

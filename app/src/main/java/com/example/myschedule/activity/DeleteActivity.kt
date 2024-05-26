@@ -3,13 +3,8 @@ package com.example.myschedule.activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
@@ -20,8 +15,6 @@ import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.lang.NullPointerException
-import java.text.SimpleDateFormat
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -37,11 +30,24 @@ class DeleteActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupListeners()
     }
+    private fun search() {
+        val pos = binding.spinner.selectedItemPosition
+        val etArray = mutableListOf<String>()
+        val date = binding.etYear.text.toString()+"-"+binding.etMonth.text.toString()+"-"+binding.etDay.text.toString()
+        etArray.add(date)
+        etArray.add(binding.etTitle.text.toString())
+        etArray.add(binding.etContent.text.toString())
+        schedules = myViewModel.advancedSearch(pos,etArray)
+        scheduleObserver?.let { schedules?.removeObserver(it) }
+        scheduleObserver = Observer {
+            setData()
+        }
+        schedules?.observe(this, scheduleObserver!!)
 
+    }
     private fun setData() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = schedules?.value?.let { MyScheduleAdapterDelete(it) }!!
-        binding.recyclerView.adapter = adapter
+        adapter.updateData(schedules?.value!!)
     }
 
     private fun setupListeners() {
@@ -77,22 +83,6 @@ class DeleteActivity : AppCompatActivity() {
         }
     }
 
-    private fun search() {
-        val pos = binding.spinner.selectedItemPosition
-        val etArray = mutableListOf<String>()
-        val date = binding.etYear.text.toString()+"-"+binding.etMonth.text.toString()+"-"+binding.etDay.text.toString()
-        etArray.add(date)
-        etArray.add(binding.etTitle.text.toString())
-        etArray.add(binding.etContent.text.toString())
-        schedules = myViewModel.advancedSearch(pos,etArray)
-        //schedules = myViewModel.getSchedulesByType(1)
-        scheduleObserver?.let { schedules?.removeObserver(it) }
-        scheduleObserver = Observer {
-            setData()
-        }
-        schedules?.observe(this, scheduleObserver!!)
-
-    }
     private fun delete(){
         val confirmationDialog = AlertDialog.Builder(this)
             .setTitle("일정 삭제")
@@ -107,6 +97,10 @@ class DeleteActivity : AppCompatActivity() {
             .setNegativeButton("취소", null)
             .create()
         confirmationDialog.show()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        scheduleObserver?.let { schedules?.removeObserver(it) }
     }
 
 }

@@ -2,7 +2,6 @@ package com.example.myschedule.fragment
 
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,7 @@ class WeekFragment : Fragment(){
     private lateinit var binding : WeekLayoutBinding
     private lateinit var sDate : String
     private lateinit var eDate : String
-    private val scheduleLists: MutableList<MutableList<Pair<rectangleFormSchedule,Int>>> = MutableList(3) { mutableListOf() }
+    private val scheduleLists: MutableList<MutableList<Pair<rectangleFormSchedule,Int>>> = MutableList(4) { mutableListOf() }
     private val myViewModel: MyViewModel by viewModels()
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private var colorIndex = 0
@@ -51,29 +50,20 @@ class WeekFragment : Fragment(){
         sDate = sdf.format(calendar.time)
         calendar.add(Calendar.DAY_OF_YEAR, 6)
         eDate = sdf.format(calendar.time)
-        val dailyScheduleLiveData = myViewModel.getWeekSchedulesByDateAndType(sDate,eDate,0)
-        val daySchedule = myViewModel.getWeekSchedulesByDateAndType(sDate,eDate,1)
-        val periodScheduleLiveData = myViewModel.getWeekSchedulesByDateAndType(sDate,eDate,2)
-        dailyScheduleLiveData.observe(viewLifecycleOwner){dailySchedules->
-            removeSchedules(0)
-            addSchedules(0,dailySchedules)
-        }
-        daySchedule.observe(viewLifecycleOwner){daySchedules->
-            removeSchedules(1)
-            addSchedules(1,daySchedules)
-        }
-        periodScheduleLiveData.observe(viewLifecycleOwner){periodSchedules->
-            removeSchedules(2)
-            addSchedules(2,periodSchedules)
+        val scheduleData = myViewModel.getWeekSchedule(sDate,eDate)
+        scheduleData.observe(viewLifecycleOwner){
+            removeSchedules()
+            addSchedules(it)
         }
 
         return binding.root
     }
 
-    private fun addSchedules(i:Int,schedules: List<Schedule>) {
+    private fun addSchedules(schedules: List<Schedule>) {
         for (schedule in schedules) {
             val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
             val color = ContextCompat.getColor(requireContext(), colorResourceId)
+            val i = schedule.type
             colorIndex++
             when (i) {
                 0 -> {
@@ -91,7 +81,7 @@ class WeekFragment : Fragment(){
                         }
                         val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
                         frames[frameIdx].addView(v)
-                        v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
+                        v?.let { scheduleLists[3].add(Pair(it,frameIdx)) }
                     }
                 }
                 1 -> {
@@ -140,14 +130,16 @@ class WeekFragment : Fragment(){
             }
         }
     }
-    private fun removeSchedules(i: Int) {
-        for (timePiece in scheduleLists[i]) {
-            frames[timePiece.second].removeView(timePiece.first)
+    private fun removeSchedules() {
+        for(i in 0 until 4){
+            for (timePiece in scheduleLists[i]) {
+                frames[timePiece.second].removeView(timePiece.first)
+            }
+            scheduleLists[i].clear()
         }
-        scheduleLists[i].clear()
     }
     fun refresh(){
-        refreshIdx %= 3
+        refreshIdx %= 4
         for (timePiece in scheduleLists[refreshIdx]) {
             frames[timePiece.second].removeView(timePiece.first)
             frames[timePiece.second].addView(timePiece.first)

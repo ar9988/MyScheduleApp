@@ -9,7 +9,7 @@ import com.example.myschedule.R
 import com.example.myschedule.databinding.ScheduleItemMonth2Binding
 import com.example.myschedule.db.Schedule
 
-class MyScheduleAdapterMonth2(private val itemList: MutableList<Schedule>): RecyclerView.Adapter<MyScheduleAdapterMonth2.Holder>() {
+class MyScheduleAdapterMonth2(private var itemList: MutableList<Schedule>): RecyclerView.Adapter<MyScheduleAdapterMonth2.Holder>() {
     private var idx = 0
     private lateinit var context: Context
     private val rainbowColors = intArrayOf(
@@ -21,7 +21,7 @@ class MyScheduleAdapterMonth2(private val itemList: MutableList<Schedule>): Recy
         R.color.rainbow6,
         R.color.rainbow7
     )
-    inner class Holder(private val binding: ScheduleItemMonth2Binding) : RecyclerView.ViewHolder(binding.root) {
+    inner class Holder(binding: ScheduleItemMonth2Binding) : RecyclerView.ViewHolder(binding.root) {
         val scheduleTitle = binding.title
         val backGround = binding.backGround
     }
@@ -43,5 +43,15 @@ class MyScheduleAdapterMonth2(private val itemList: MutableList<Schedule>): Recy
         idx++
         val color = ContextCompat.getColor(context, colorResourceId)
         holder.backGround.setBackgroundColor(color)
+    }
+
+    fun shiftItems() {
+        if (itemList.isNotEmpty()) {
+            val newList = itemList
+            val lastItem = newList.removeAt(newList.size - 1)
+            newList.add(0, lastItem)
+            itemList = newList
+            notifyDataSetChanged()
+        }
     }
 }
