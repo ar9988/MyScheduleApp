@@ -17,6 +17,7 @@ import com.example.myschedule.R
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
+import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,30 +64,32 @@ class InputActivity: AppCompatActivity()  {
     private fun setupListeners() {
         binding.apply {
             datePicker.setOnClickListener {
-                val calendar = Calendar.getInstance()
-                val year = calendar.get(Calendar.YEAR)
-                val month = calendar.get(Calendar.MONTH)
-                val day = calendar.get(Calendar.DAY_OF_MONTH)
-                DatePickerDialog(this@InputActivity,16973935, { _, year, month, day ->
-                    run {
-                        binding.etYear.setText("$year")
-                        binding.etMonth.setText("${month+1}")
-                        binding.etDay.setText("$day")
-                    }
-                }, year, month, day).show()
+                val datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("날짜 선택")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+                datePicker.addOnPositiveButtonClickListener { dateInMillis ->
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = dateInMillis
+                    binding.etYear.setText(calendar.get(Calendar.YEAR).toString())
+                    binding.etMonth.setText((calendar.get(Calendar.MONTH) + 1).toString())
+                    binding.etDay.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())
+                }
+                datePicker.show(supportFragmentManager, "DATE_PICKER")
             }
             datePicker2.setOnClickListener {
-                val calendar = Calendar.getInstance()
-                val year = calendar.get(Calendar.YEAR)
-                val month = calendar.get(Calendar.MONTH)
-                val day = calendar.get(Calendar.DAY_OF_MONTH)
-                DatePickerDialog(this@InputActivity,16973935, { _, year, month, day ->
-                    run {
-                        binding.etYear2.setText("$year")
-                        binding.etMonth2.setText("${month+1}")
-                        binding.etDay2.setText("$day")
-                    }
-                }, year, month, day).show()
+                val datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("날짜 선택")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+                datePicker.addOnPositiveButtonClickListener { dateInMillis ->
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = dateInMillis
+                    binding.etYear2.setText(calendar.get(Calendar.YEAR).toString())
+                    binding.etMonth2.setText((calendar.get(Calendar.MONTH) + 1).toString())
+                    binding.etDay2.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())
+                }
+                datePicker.show(supportFragmentManager, "DATE_PICKER")
             }
             timePicker1.setOnClickListener {
                 val timeSetListener = TimePickerDialog.OnTimeSetListener{_,hourOfDay,minute ->
@@ -251,7 +254,7 @@ class InputActivity: AppCompatActivity()  {
 
     private suspend fun conflictCheck(type:Int,startTime:String,endTime:String): Pair<Boolean, String?> {
         var item:String? = null
-        var flag:Boolean = false
+        var flag = false
         val deferred = CoroutineScope(Dispatchers.IO).async {
             if(type==0){
                 item = myViewModel.conflictCheck2(dayOfWeek, startTime, endTime)

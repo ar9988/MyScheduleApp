@@ -21,6 +21,7 @@ import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -29,7 +30,7 @@ class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
     private val myViewModel: MyViewModel by viewModels()
     private val scheduleLists: MutableList<MutableList<circularSectorFormSchedule>> = MutableList(4) { mutableListOf() }
-    private val sdf = SimpleDateFormat("yyyy-MM-dd")
+    private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private var calendar = Calendar.getInstance()
     private var prevX = 0f
     private var prevY = 0f

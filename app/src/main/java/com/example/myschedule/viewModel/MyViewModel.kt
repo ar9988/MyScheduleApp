@@ -1,6 +1,5 @@
 package com.example.myschedule.viewModel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.myschedule.db.Schedule
@@ -34,7 +33,6 @@ class MyViewModel @Inject constructor(
 
     fun advancedSearch(type:Int,etArray: MutableList<String>):LiveData<List<Schedule>>{
         if(etArray[0]=="--"&&etArray[1].isEmpty()&&etArray[2].isEmpty()){
-            Log.d("called",type.toString())
             return repository.getSchedulesByType(type)
         }else if(etArray[1].isEmpty()&&etArray[2].isEmpty()){
             return repository.getScheduleByDateAndType(etArray[0],type)

@@ -52,4 +52,13 @@
     <string name="saturday">토</string>
     <string name="sunday">일</string>
     <string name="everyday">일일</string>
+    <string name="checkBoxTxt">전부 선택</string>
+    <string name="contentTitle">일정 제목 :</string>
+    <string name="inputTitle">제목을 입력하세요</string>
+    <string name="searchBtnDescription">검색 버튼</string>
+    <string name="delete">삭제</string>
+    <string name="etTextHint">일정을 입력하세요</string>
+    <string name="tv2Txt">일정 내용 :</string>
+    <string name="tv0Txt">유형 :</string>
+    <string name="datePickerHint">calendarBtn</string>
 </resources>
