@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.myschedule.R
-import com.example.myschedule.customView.circularSectorFormSchedule
+import com.example.myschedule.customView.CircularSectorFormSchedule
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
@@ -29,7 +29,7 @@ import kotlin.math.atan2
 class DayFragment : Fragment(){
     private lateinit var binding : DayLayoutBinding
     private val myViewModel: MyViewModel by viewModels()
-    private val scheduleLists: MutableList<MutableList<circularSectorFormSchedule>> = MutableList(4) { mutableListOf() }
+    private val scheduleLists: MutableList<MutableList<CircularSectorFormSchedule>> = MutableList(4) { mutableListOf() }
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private var calendar = Calendar.getInstance()
     private var prevX = 0f
@@ -138,7 +138,7 @@ class DayFragment : Fragment(){
             val colorResourceId = rainbowColors[colorIndex % rainbowColors.size]
             val color = ContextCompat.getColor(requireContext(), colorResourceId)
             colorIndex++
-            val v : circularSectorFormSchedule? = context?.let { circularSectorFormSchedule(it,attrs = null,item,color,binding) }
+            val v : CircularSectorFormSchedule? = context?.let { CircularSectorFormSchedule(it,attrs = null,item,color,binding) }
             frame.addView(v)
             if(item.type==0 && item.startDate != "0") v?.let { scheduleLists[3].add(it) }
             v?.let{scheduleLists[item.type].add(it)}
@@ -165,7 +165,7 @@ class DayFragment : Fragment(){
         if (angle < 0) {
             angle += 360f
         }
-        val selectedItems: MutableList<Pair<circularSectorFormSchedule,Int>> = mutableListOf()
+        val selectedItems: MutableList<Pair<CircularSectorFormSchedule,Int>> = mutableListOf()
         for((index, list) in scheduleLists.withIndex()){
             for(item in list){
                 val angles = item.getAngles()
@@ -231,7 +231,7 @@ class DayFragment : Fragment(){
         return fl
     }
 
-    private fun findNearestAngle(item: circularSectorFormSchedule, item2: circularSectorFormSchedule, angle:Float):Boolean{
+    private fun findNearestAngle(item: CircularSectorFormSchedule, item2: CircularSectorFormSchedule, angle:Float):Boolean{
         val a = abs(item.getCentralAngle() - angle)
         val b = abs(item2.getCentralAngle() - angle)
         return a>b

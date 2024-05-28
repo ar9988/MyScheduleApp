@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.example.myschedule.db.Schedule
 
-class rectangleFormSchedule(
+class RectangleFormSchedule(
     context: Context,
     attrs: AttributeSet?,
     val schedule: Schedule,

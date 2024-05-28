@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myschedule.R
 import com.example.myschedule.recyclerview.MyScheduleAdapterDelete
 import com.example.myschedule.databinding.DeleteLayoutBinding
 import com.example.myschedule.db.Schedule
@@ -83,7 +84,10 @@ class DeleteActivity : AppCompatActivity() {
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = dateInMillis
                 binding.etYear.setText(calendar.get(Calendar.YEAR).toString())
-                binding.etMonth.setText((calendar.get(Calendar.MONTH) + 1).toString())
+                binding.etMonth.setText(getString(
+                    R.string.month_placeholder,
+                    calendar.get(Calendar.MONTH) + 1
+                ))
                 binding.etDay.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())
             }
             datePicker.show(supportFragmentManager, "DATE_PICKER")

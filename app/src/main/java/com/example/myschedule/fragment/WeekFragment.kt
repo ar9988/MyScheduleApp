@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.myschedule.R
-import com.example.myschedule.customView.rectangleFormSchedule
+import com.example.myschedule.customView.RectangleFormSchedule
 import com.example.myschedule.databinding.WeekLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
@@ -23,7 +23,7 @@ class WeekFragment : Fragment(){
     private lateinit var binding : WeekLayoutBinding
     private lateinit var sDate : String
     private lateinit var eDate : String
-    private val scheduleLists: MutableList<MutableList<Pair<rectangleFormSchedule,Int>>> = MutableList(4) { mutableListOf() }
+    private val scheduleLists: MutableList<MutableList<Pair<RectangleFormSchedule,Int>>> = MutableList(4) { mutableListOf() }
     private val myViewModel: MyViewModel by viewModels()
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private var colorIndex = 0
@@ -69,7 +69,7 @@ class WeekFragment : Fragment(){
                 0 -> {
                     if(schedule.startDate == "0"){
                         for((j,frame) in frames.withIndex()){
-                            val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
+                            val v : RectangleFormSchedule? = context?.let { RectangleFormSchedule(it,attrs = null,schedule,color) }
                             frame.addView(v)
                             v?.let { scheduleLists[i].add(Pair(it,j)) }
                         }
@@ -79,7 +79,7 @@ class WeekFragment : Fragment(){
                         if(frameIdx < 0) {
                             frameIdx += 7
                         }
-                        val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
+                        val v : RectangleFormSchedule? = context?.let { RectangleFormSchedule(it,attrs = null,schedule,color) }
                         frames[frameIdx].addView(v)
                         v?.let { scheduleLists[3].add(Pair(it,frameIdx)) }
                     }
@@ -96,7 +96,7 @@ class WeekFragment : Fragment(){
                     if(frameIdx < 0) {
                         frameIdx += 7
                     }
-                    val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
+                    val v : RectangleFormSchedule? = context?.let { RectangleFormSchedule(it,attrs = null,schedule,color) }
                     frames[frameIdx].addView(v)
                     v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
                 }
@@ -120,7 +120,7 @@ class WeekFragment : Fragment(){
                         frameIdx += 7
                     }
                     while(calendar1.time<=calendar2.time){
-                        val v : rectangleFormSchedule? = context?.let { rectangleFormSchedule(it,attrs = null,schedule,color) }
+                        val v : RectangleFormSchedule? = context?.let { RectangleFormSchedule(it,attrs = null,schedule,color) }
                         frames[frameIdx].addView(v)
                         v?.let { scheduleLists[i].add(Pair(it,frameIdx)) }
                         calendar1.add(Calendar.DAY_OF_MONTH, 1)

@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myschedule.R
 import com.example.myschedule.recyclerview.MyScheduleAdapterFragment
 import com.example.myschedule.customView.MonthYearPickerDialog
 import com.example.myschedule.recyclerview.MyScheduleAdapterMonth
@@ -38,7 +39,11 @@ class MonthFragment :Fragment(){
     ): View {
         binding= MonthLayoutBinding.inflate(inflater)
         val calendar = Calendar.getInstance()
-        binding.calendarTxt.text="${calendar.get(Calendar.YEAR)}년 ${calendar.get(Calendar.MONTH)+1}월"
+        binding.calendarTxt.text=getString(
+            R.string.calendar_text,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH) + 1
+        )
         binding.datePicker.setOnClickListener {
             showMonthYearPicker()
         }
@@ -47,10 +52,18 @@ class MonthFragment :Fragment(){
             val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
             val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
             if(currentMonth!=0){
-                binding.calendarTxt.text="${currentYear}년 ${currentMonth}월"
+                binding.calendarTxt.text=getString(
+                    R.string.calendar_text,
+                    currentYear,
+                    currentMonth
+                )
             }
             else{
-                binding.calendarTxt.text="${currentYear-1}년 ${12}월"
+                binding.calendarTxt.text=getString(
+                    R.string.calendar_text,
+                    currentYear-1,
+                    12
+                )
             }
             setObserver()
         }
@@ -59,10 +72,18 @@ class MonthFragment :Fragment(){
             val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
             val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
             if(currentMonth!=11){
-                binding.calendarTxt.text="${currentYear}년 ${currentMonth+2}월"
+                binding.calendarTxt.text=getString(
+                    R.string.calendar_text,
+                    currentYear,
+                    currentMonth+2
+                )
             }
             else{
-                binding.calendarTxt.text="${currentYear+1}년 ${1}월"
+                binding.calendarTxt.text=getString(
+                    R.string.calendar_text,
+                    currentYear+1,
+                    1
+                )
             }
             setObserver()
         }
@@ -188,7 +209,11 @@ class MonthFragment :Fragment(){
 
     private fun showMonthYearPicker() {
         val dialog = MonthYearPickerDialog(requireContext(),binding) { year, month ->
-            binding.calendarTxt.text="${year}년 ${month+1}월"
+            binding.calendarTxt.text=getString(
+                R.string.calendar_text,
+                year,
+                month+1
+            )
             setObserver()
         }
         dialog.show()

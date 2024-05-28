@@ -14,7 +14,7 @@ import com.example.myschedule.db.Schedule
 import kotlin.math.cos
 import kotlin.math.sin
 
-class circularSectorFormSchedule(
+class CircularSectorFormSchedule(
     context: Context,
     attrs: AttributeSet?,
     val schedule: Schedule,
