@@ -1,18 +1,14 @@
 package com.example.myschedule.activity
 
-import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.myschedule.R
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
@@ -24,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.DayOfWeek
 import java.util.Calendar
 import java.util.Locale
 
@@ -73,7 +68,10 @@ class InputActivity: AppCompatActivity()  {
                     val calendar = Calendar.getInstance()
                     calendar.timeInMillis = dateInMillis
                     binding.etYear.setText(calendar.get(Calendar.YEAR).toString())
-                    binding.etMonth.setText((calendar.get(Calendar.MONTH) + 1).toString())
+                    binding.etMonth.setText(getString(
+                        R.string.month_placeholder,
+                        calendar.get(Calendar.MONTH) + 1
+                    ))
                     binding.etDay.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())
                 }
                 datePicker.show(supportFragmentManager, "DATE_PICKER")
@@ -87,7 +85,10 @@ class InputActivity: AppCompatActivity()  {
                     val calendar = Calendar.getInstance()
                     calendar.timeInMillis = dateInMillis
                     binding.etYear2.setText(calendar.get(Calendar.YEAR).toString())
-                    binding.etMonth2.setText((calendar.get(Calendar.MONTH) + 1).toString())
+                    binding.etMonth2.setText(getString(
+                        R.string.month_placeholder,
+                        calendar.get(Calendar.MONTH) + 1
+                    ))
                     binding.etDay2.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())
                 }
                 datePicker.show(supportFragmentManager, "DATE_PICKER")
@@ -209,7 +210,6 @@ class InputActivity: AppCompatActivity()  {
                                 Toast.makeText(this@InputActivity, "해당 시간대에 ${ans.second} 일정이 있습니다", Toast.LENGTH_SHORT).show()
                             } else {
                                 if(type == 0){
-                                    Log.d("input",dayOfWeek.toString());
                                     val tmp = Schedule(
                                         0L,
                                         0,
@@ -254,8 +254,8 @@ class InputActivity: AppCompatActivity()  {
     }
 
     private suspend fun conflictCheck(type:Int,startTime:String,endTime:String): Pair<Boolean, String?> {
-        var item:String? = null
-        var flag = false
+        var item:String?
+        var flag: Boolean
         val deferred = CoroutineScope(Dispatchers.IO).async {
             if(type==0){
                 item = myViewModel.conflictCheck2(dayOfWeek, startTime, endTime)

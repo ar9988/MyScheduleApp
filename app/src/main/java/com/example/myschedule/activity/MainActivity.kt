@@ -3,14 +3,11 @@ package com.example.myschedule.activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.myschedule.databinding.ActivityMainBinding
 import com.example.myschedule.fragment.DayFragment
 import com.example.myschedule.fragment.MonthFragment
 import com.example.myschedule.fragment.WeekFragment
-import com.example.myschedule.viewModel.MyViewModel
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
