@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import com.example.myschedule.R
@@ -19,7 +20,8 @@ class MonthYearPickerDialog(
     private val months = listOf("1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월")
 
     init {
-        val view = LayoutInflater.from(context).inflate(R.layout.dialog_month_year_picker, null)
+        val rootView = FrameLayout(context)
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_month_year_picker, rootView)
         setView(view)
 
         val monthSpinner = view.findViewById<Spinner>(R.id.monthSpinner)

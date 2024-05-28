@@ -30,20 +30,20 @@ class rectangleFormSchedule(
         val lowerLimit = 420
         val maxLimit = 1440
         if (endTime > startTime) {
-            drawRectAndText(canvas, startTime, endTime, lowerLimit)
+            drawRectAndText(canvas, startTime, endTime)
         } else {
             if (endTime > lowerLimit) {
-                drawRectAndText(canvas, lowerLimit, endTime, lowerLimit)
+                drawRectAndText(canvas, lowerLimit, endTime)
             }
             if (startTime < maxLimit) {
-                drawRectAndText(canvas, startTime, maxLimit, lowerLimit)
+                drawRectAndText(canvas, startTime, maxLimit)
             }
         }
     }
 
-    private fun drawRectAndText(canvas: Canvas, start: Int, end: Int, offset: Int) {
+    private fun drawRectAndText(canvas: Canvas, start: Int, end: Int) {
         var duration = end - start
-        var startLocation = start - offset
+        var startLocation = start - 420
 
         if (startLocation < 0) {
             duration += startLocation

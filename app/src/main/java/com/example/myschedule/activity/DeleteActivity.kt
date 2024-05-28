@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -38,22 +39,32 @@ class DeleteActivity : AppCompatActivity() {
         val pos = binding.spinner.selectedItemPosition
         val etArray = mutableListOf<String>()
         val calendar = Calendar.getInstance()
-        calendar.set(
-            binding.etYear.text.toString().toInt(),
-            binding.etMonth.text.toString().toInt()-1,
-            binding.etDay.text.toString().toInt(),
-        )
-        val date = sdf.format(calendar.time) // binding.etYear.text.toString()+"-"+binding.etMonth.text.toString()+"-"+binding.etDay.text.toString()
-        etArray.add(date)
-        etArray.add(binding.etTitle.text.toString())
-        etArray.add(binding.etContent.text.toString())
-        schedules = myViewModel.advancedSearch(pos,etArray)
-        scheduleObserver?.let { schedules?.removeObserver(it) }
-        scheduleObserver = Observer {
-            setData()
-        }
-        schedules?.observe(this, scheduleObserver!!)
+        val flag1 = binding.etYear.text.toString().isEmpty()
+        val flag2 = binding.etMonth.text.toString().isEmpty()
+        val flag3 = binding.etDay.text.toString().isEmpty()
 
+        if ((flag1 || flag2 || flag3) && !(flag1 && flag2 && flag3)) {
+            Toast.makeText(this@DeleteActivity, "년, 월, 일을 모두 입력하거나 모두 비워야 합니다.", Toast.LENGTH_SHORT).show()
+        } else {
+            var date = ""
+            if (!flag1) {
+                calendar.set(
+                    binding.etYear.text.toString().toInt(),
+                    binding.etMonth.text.toString().toInt() - 1,
+                    binding.etDay.text.toString().toInt()
+                )
+                date = sdf.format(calendar.time)
+            }
+            etArray.add(date)
+            etArray.add(binding.etTitle.text.toString())
+            etArray.add(binding.etContent.text.toString())
+            schedules = myViewModel.advancedSearch(pos, etArray)
+            scheduleObserver?.let { schedules?.removeObserver(it) }
+            scheduleObserver = Observer {
+                setData()
+            }
+            schedules?.observe(this, scheduleObserver!!)
+        }
     }
     private fun setData() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)

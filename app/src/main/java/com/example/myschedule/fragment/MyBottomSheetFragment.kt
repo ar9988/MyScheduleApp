@@ -10,7 +10,7 @@ import com.example.myschedule.recyclerview.MyScheduleAdapterFragment
 import com.example.myschedule.databinding.BottomSheetLayoutBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class MyBottomSheetFragment(val adapter:MyScheduleAdapterFragment) : BottomSheetDialogFragment() {
+class MyBottomSheetFragment(private val adapter:MyScheduleAdapterFragment) : BottomSheetDialogFragment() {
     private var _binding: BottomSheetLayoutBinding? = null
     private val binding get() = _binding!!
 

@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class InputActivity: AppCompatActivity()  {
@@ -40,7 +41,7 @@ class InputActivity: AppCompatActivity()  {
     private var state = 0
     private var dayOfWeek = 0
     private var type=0
-    private val sdf = SimpleDateFormat("yyyy-MM-dd")
+    private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private lateinit var frames:Array<ConstraintLayout>
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -308,33 +309,35 @@ class InputActivity: AppCompatActivity()  {
         binding.textView12.visibility = View.INVISIBLE
     }
     private fun activateCalendar(i: Int){
-        if(i==0){
-            binding.spinner.visibility = View.VISIBLE
-        }
-        else if(i==2){
-            binding.datePicker.visibility = View.VISIBLE
-            binding.etYear.visibility = View.VISIBLE
-            binding.etMonth.visibility = View.VISIBLE
-            binding.etDay.visibility = View.VISIBLE
-            binding.datePicker2.visibility = View.VISIBLE
-            binding.etYear2.visibility = View.VISIBLE
-            binding.etMonth2.visibility = View.VISIBLE
-            binding.etDay2.visibility = View.VISIBLE
-            binding.textView.visibility = View.VISIBLE
-            binding.textView2.visibility = View.VISIBLE
-            binding.textView3.visibility = View.VISIBLE
-            binding.textView10.visibility = View.VISIBLE
-            binding.textView11.visibility = View.VISIBLE
-            binding.textView12.visibility = View.VISIBLE
-        }
-        else{
-            binding.datePicker.visibility = View.VISIBLE
-            binding.etYear.visibility = View.VISIBLE
-            binding.etMonth.visibility = View.VISIBLE
-            binding.etDay.visibility = View.VISIBLE
-            binding.textView.visibility = View.VISIBLE
-            binding.textView2.visibility = View.VISIBLE
-            binding.textView3.visibility = View.VISIBLE
+        when (i) {
+            0 -> {
+                binding.spinner.visibility = View.VISIBLE
+            }
+            2 -> {
+                binding.datePicker.visibility = View.VISIBLE
+                binding.etYear.visibility = View.VISIBLE
+                binding.etMonth.visibility = View.VISIBLE
+                binding.etDay.visibility = View.VISIBLE
+                binding.datePicker2.visibility = View.VISIBLE
+                binding.etYear2.visibility = View.VISIBLE
+                binding.etMonth2.visibility = View.VISIBLE
+                binding.etDay2.visibility = View.VISIBLE
+                binding.textView.visibility = View.VISIBLE
+                binding.textView2.visibility = View.VISIBLE
+                binding.textView3.visibility = View.VISIBLE
+                binding.textView10.visibility = View.VISIBLE
+                binding.textView11.visibility = View.VISIBLE
+                binding.textView12.visibility = View.VISIBLE
+            }
+            else -> {
+                binding.datePicker.visibility = View.VISIBLE
+                binding.etYear.visibility = View.VISIBLE
+                binding.etMonth.visibility = View.VISIBLE
+                binding.etDay.visibility = View.VISIBLE
+                binding.textView.visibility = View.VISIBLE
+                binding.textView2.visibility = View.VISIBLE
+                binding.textView3.visibility = View.VISIBLE
+            }
         }
     }
 }

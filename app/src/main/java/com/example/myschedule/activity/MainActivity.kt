@@ -44,13 +44,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
         refreshBtn.setOnClickListener{
-            val currentFragment = supportFragmentManager.findFragmentById(binding.tabContent.id)
-            if(currentFragment == fragmentDay){
-                fragmentDay.refresh()
-            }else if(currentFragment == fragmentWeek){
-                fragmentWeek.refresh()
-            }else{
-                fragmentMonth.refresh()
+            when (supportFragmentManager.findFragmentById(binding.tabContent.id)) {
+                fragmentDay -> {
+                    fragmentDay.refresh()
+                }
+                fragmentWeek -> {
+                    fragmentWeek.refresh()
+                }
+                else -> {
+                    fragmentMonth.refresh()
+                }
             }
         }
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{

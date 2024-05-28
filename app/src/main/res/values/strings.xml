@@ -61,4 +61,5 @@
     <string name="tv2Txt">일정 내용 :</string>
     <string name="tv0Txt">유형 :</string>
     <string name="datePickerHint">calendarBtn</string>
+    <string name="month_placeholder">%d</string>
 </resources>

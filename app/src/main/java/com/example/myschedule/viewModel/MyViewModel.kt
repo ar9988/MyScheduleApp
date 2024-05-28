@@ -32,19 +32,19 @@ class MyViewModel @Inject constructor(
     }
 
     fun advancedSearch(type:Int,etArray: MutableList<String>):LiveData<List<Schedule>>{
-        if(etArray[0]=="--"&&etArray[1].isEmpty()&&etArray[2].isEmpty()){
+        if(etArray[0].isEmpty()&&etArray[1].isEmpty()&&etArray[2].isEmpty()){
             return repository.getSchedulesByType(type)
         }else if(etArray[1].isEmpty()&&etArray[2].isEmpty()){
             return repository.getScheduleByDateAndType(etArray[0],type)
-        }else if(etArray[0]=="--"&&etArray[2].isEmpty()){
+        }else if(etArray[0].isEmpty()&&etArray[2].isEmpty()){
             return repository.getSchedulesByTypeAndTitle(type,etArray[1])
-        }else if(etArray[0]=="--"&&etArray[1].isEmpty()){
+        }else if(etArray[0].isEmpty()&&etArray[1].isEmpty()){
             return repository.getSchedulesByTypeAndContents(type,etArray[2])
         }else if(etArray[2].isEmpty()){
             return repository.getSchedulesByTypeAndDateAndTitle(type,etArray[0],etArray[1])
         }else if(etArray[1].isEmpty()){
             return repository.getSchedulesByTypeAndDateAndContents(type,etArray[0],etArray[2])
-        }else if(etArray[0]=="--"){
+        }else if(etArray[0].isEmpty()){
             return repository.getSchedulesByTypeAndTitleAndContents(type,etArray[1],etArray[2])
         }else{
             return repository.getSchedulesByTypeAndDateAndTitleAndContents(type,etArray[0],etArray[1],etArray[2])
