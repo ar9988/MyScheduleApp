@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -38,10 +39,21 @@ class InputActivity: AppCompatActivity()  {
     private var type=0
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private lateinit var frames:Array<ConstraintLayout>
+    private val callback = object : OnBackPressedCallback(true){
+        override fun handleOnBackPressed() {
+            if (state > 0) {
+                state--
+                activateState(state)
+            } else {
+                finish()
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         binding = InputLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        this.onBackPressedDispatcher.addCallback(this, callback)
         frames = arrayOf(binding.frame0, binding.frame1, binding.frame2)
         activateState(0)
         setupListeners()
@@ -247,9 +259,8 @@ class InputActivity: AppCompatActivity()  {
                     }
                 }
             }
-
             btnCancel.setOnClickListener {
-                onBackPressed()
+                callback.handleOnBackPressed()
             }
         }
     }
@@ -281,14 +292,6 @@ class InputActivity: AppCompatActivity()  {
 
     private fun deactivateAllFrames() {
         frames.forEach { it.visibility = View.INVISIBLE }
-    }
-    override fun onBackPressed() {
-        if (state > 0) {
-            state--
-            activateState(state)
-        } else {
-            super.onBackPressed()
-        }
     }
     private fun deactivateCalendar(){
         with(binding){
