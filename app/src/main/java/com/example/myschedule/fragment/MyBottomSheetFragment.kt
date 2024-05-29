@@ -1,7 +1,6 @@
 package com.example.myschedule.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +32,6 @@ class MyBottomSheetFragment(private val adapter:MyScheduleAdapterFragment) : Bot
     }
 
     override fun onDestroyView() {
-        Log.d("fragment destroy","onDestroyView")
         super.onDestroyView()
         _binding = null
     }

@@ -81,6 +81,7 @@ class InputActivity: AppCompatActivity()  {
                     .setTitleText("날짜 선택")
                     .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                     .build()
+
                 datePicker.addOnPositiveButtonClickListener { dateInMillis ->
                     val calendar = Calendar.getInstance()
                     calendar.timeInMillis = dateInMillis
@@ -270,8 +271,6 @@ class InputActivity: AppCompatActivity()  {
         }
 
         val (resultFlag, resultItem) = deferred.await()
-
-
         return Pair(resultFlag, resultItem)
     }
 
@@ -292,51 +291,55 @@ class InputActivity: AppCompatActivity()  {
         }
     }
     private fun deactivateCalendar(){
-        binding.spinner.visibility = View.INVISIBLE
-        binding.datePicker.visibility = View.INVISIBLE
-        binding.etYear.visibility = View.INVISIBLE
-        binding.etMonth.visibility = View.INVISIBLE
-        binding.etDay.visibility = View.INVISIBLE
-        binding.datePicker2.visibility = View.INVISIBLE
-        binding.etYear2.visibility = View.INVISIBLE
-        binding.etMonth2.visibility = View.INVISIBLE
-        binding.etDay2.visibility = View.INVISIBLE
-        binding.textView.visibility = View.INVISIBLE
-        binding.textView2.visibility = View.INVISIBLE
-        binding.textView3.visibility = View.INVISIBLE
-        binding.textView10.visibility = View.INVISIBLE
-        binding.textView11.visibility = View.INVISIBLE
-        binding.textView12.visibility = View.INVISIBLE
+        with(binding){
+            spinner.visibility = View.INVISIBLE
+            datePicker.visibility = View.INVISIBLE
+            etYear.visibility = View.INVISIBLE
+            etMonth.visibility = View.INVISIBLE
+            etDay.visibility = View.INVISIBLE
+            datePicker2.visibility = View.INVISIBLE
+            etYear2.visibility = View.INVISIBLE
+            etMonth2.visibility = View.INVISIBLE
+            etDay2.visibility = View.INVISIBLE
+            textView.visibility = View.INVISIBLE
+            textView2.visibility = View.INVISIBLE
+            textView3.visibility = View.INVISIBLE
+            textView10.visibility = View.INVISIBLE
+            textView11.visibility = View.INVISIBLE
+            textView12.visibility = View.INVISIBLE
+        }
     }
     private fun activateCalendar(i: Int){
-        when (i) {
-            0 -> {
-                binding.spinner.visibility = View.VISIBLE
-            }
-            2 -> {
-                binding.datePicker.visibility = View.VISIBLE
-                binding.etYear.visibility = View.VISIBLE
-                binding.etMonth.visibility = View.VISIBLE
-                binding.etDay.visibility = View.VISIBLE
-                binding.datePicker2.visibility = View.VISIBLE
-                binding.etYear2.visibility = View.VISIBLE
-                binding.etMonth2.visibility = View.VISIBLE
-                binding.etDay2.visibility = View.VISIBLE
-                binding.textView.visibility = View.VISIBLE
-                binding.textView2.visibility = View.VISIBLE
-                binding.textView3.visibility = View.VISIBLE
-                binding.textView10.visibility = View.VISIBLE
-                binding.textView11.visibility = View.VISIBLE
-                binding.textView12.visibility = View.VISIBLE
-            }
-            else -> {
-                binding.datePicker.visibility = View.VISIBLE
-                binding.etYear.visibility = View.VISIBLE
-                binding.etMonth.visibility = View.VISIBLE
-                binding.etDay.visibility = View.VISIBLE
-                binding.textView.visibility = View.VISIBLE
-                binding.textView2.visibility = View.VISIBLE
-                binding.textView3.visibility = View.VISIBLE
+        with(binding){
+            when (i) {
+                0 -> {
+                    spinner.visibility = View.VISIBLE
+                }
+                2 -> {
+                    datePicker.visibility = View.VISIBLE
+                    etYear.visibility = View.VISIBLE
+                    etMonth.visibility = View.VISIBLE
+                    etDay.visibility = View.VISIBLE
+                    datePicker2.visibility = View.VISIBLE
+                    etYear2.visibility = View.VISIBLE
+                    etMonth2.visibility = View.VISIBLE
+                    etDay2.visibility = View.VISIBLE
+                    textView.visibility = View.VISIBLE
+                    textView2.visibility = View.VISIBLE
+                    textView3.visibility = View.VISIBLE
+                    textView10.visibility = View.VISIBLE
+                    textView11.visibility = View.VISIBLE
+                    textView12.visibility = View.VISIBLE
+                }
+                else -> {
+                    datePicker.visibility = View.VISIBLE
+                    etYear.visibility = View.VISIBLE
+                    etMonth.visibility = View.VISIBLE
+                    etDay.visibility = View.VISIBLE
+                    textView.visibility = View.VISIBLE
+                    textView2.visibility = View.VISIBLE
+                    textView3.visibility = View.VISIBLE
+                }
             }
         }
     }

@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myschedule.R
+import com.example.myschedule.application.extractMonth
+import com.example.myschedule.application.extractYear
 import com.example.myschedule.recyclerview.MyScheduleAdapterFragment
 import com.example.myschedule.customView.MonthYearPickerDialog
 import com.example.myschedule.recyclerview.MyScheduleAdapterMonth
@@ -29,7 +31,6 @@ class MonthFragment :Fragment(){
     private lateinit var binding : MonthLayoutBinding
     private val myViewModel: MyViewModel by viewModels()
     private lateinit var schedules : LiveData<List<Schedule>>
-    private var scheduleObserver: Observer<List<Schedule>>? = null
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private var itemTouchListener: RecyclerView.OnItemTouchListener? = null
     private var myAdapter : MyScheduleAdapterMonth? = null
@@ -49,8 +50,8 @@ class MonthFragment :Fragment(){
         }
         binding.calendarLeftBtn.setOnClickListener{
             val items = binding.calendarTxt.text.split(" ")
-            val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
-            val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+            val currentYear = items[0].extractYear()
+            val currentMonth = items[1].extractMonth()
             if(currentMonth!=0){
                 binding.calendarTxt.text=getString(
                     R.string.calendar_text,
@@ -69,8 +70,8 @@ class MonthFragment :Fragment(){
         }
         binding.calendarRightBtn.setOnClickListener{
             val items = binding.calendarTxt.text.split(" ")
-            val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
-            val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+            val currentYear = items[0].extractYear()
+            val currentMonth = items[1].extractMonth()
             if(currentMonth!=11){
                 binding.calendarTxt.text=getString(
                     R.string.calendar_text,
@@ -92,11 +93,9 @@ class MonthFragment :Fragment(){
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
         val eDate = sdf.format(calendar.time)
         schedules = myViewModel.getMonthSchedules(sDate,eDate)
-        scheduleObserver?.let { schedules.removeObserver(it) }
-        scheduleObserver = Observer {
+        schedules.observe(viewLifecycleOwner){
             setCalendar()
         }
-        schedules.observe(viewLifecycleOwner, scheduleObserver!!)
         return binding.root
     }
 
@@ -104,8 +103,8 @@ class MonthFragment :Fragment(){
         val sortedSchedule : MutableList<MutableList<Schedule>> = sortingSchedules(schedules.value!!)
         val calendar = Calendar.getInstance()
         val items = binding.calendarTxt.text.split(" ")
-        val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
-        val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+        val currentYear = items[0].extractYear()
+        val currentMonth = items[1].extractMonth()
         calendar.set(
             currentYear,
             currentMonth,
@@ -165,8 +164,8 @@ class MonthFragment :Fragment(){
     private fun sortingSchedules(schedules: List<Schedule>): MutableList<MutableList<Schedule>> {
         val calendar = Calendar.getInstance()
         val items = binding.calendarTxt.text.split(" ")
-        val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
-        val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+        val currentYear = items[0].extractYear()
+        val currentMonth = items[1].extractMonth()
         calendar.set(
             currentYear,
             currentMonth,
@@ -222,8 +221,8 @@ class MonthFragment :Fragment(){
     private fun setObserver() {
         val calendar = Calendar.getInstance()
         val items = binding.calendarTxt.text.split(" ")
-        val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
-        val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+        val currentYear = items[0].extractYear()
+        val currentMonth = items[1].extractMonth()
         calendar.set(
             currentYear,
             currentMonth,
@@ -234,18 +233,15 @@ class MonthFragment :Fragment(){
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
         val eDate = sdf.format(calendar.time)
         schedules = myViewModel.getMonthSchedules(sDate,eDate)
-        scheduleObserver?.let { schedules.removeObserver(it) }
-        scheduleObserver = Observer {
+        schedules.observe(viewLifecycleOwner){
             setCalendar()
         }
-        schedules.observe(viewLifecycleOwner, scheduleObserver!!)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         itemTouchListener?.let { binding.recyclerView.removeOnItemTouchListener(it) }
         itemTouchListener = null
-        scheduleObserver?.let { schedules.removeObserver(it) }
     }
     fun refresh(){
         myAdapter?.shiftItems()

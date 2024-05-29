@@ -8,6 +8,8 @@ import android.widget.FrameLayout
 import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import com.example.myschedule.R
+import com.example.myschedule.application.extractMonth
+import com.example.myschedule.application.extractYear
 import com.example.myschedule.databinding.MonthLayoutBinding
 
 class MonthYearPickerDialog(
@@ -29,8 +31,8 @@ class MonthYearPickerDialog(
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         monthSpinner.adapter = monthAdapter
         val items = binding.calendarTxt.text.split(" ")
-        val currentYear = items[0].replace("[^0-9]".toRegex(), "").toInt()
-        val currentMonth = items[1].replace("[^0-9]".toRegex(), "").toInt()-1
+        val currentYear = items[0].extractYear()
+        val currentMonth = items[1].extractMonth()
         val startYear = currentYear - 10
         val endYear = currentYear + 10
         years = (startYear..endYear).toList()

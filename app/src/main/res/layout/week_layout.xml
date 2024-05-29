@@ -168,7 +168,7 @@
                 android:id="@+id/frame_1"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_height="1020dp"
+                android:layout_height="match_parent"
                 android:background="@drawable/frame_border">
             </FrameLayout>
             <FrameLayout

@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myschedule.R
@@ -27,8 +27,7 @@ class DeleteActivity : AppCompatActivity() {
     private val myViewModel: MyViewModel by viewModels()
     private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private lateinit var adapter : MyScheduleAdapterDelete
-    private var schedules: LiveData<List<Schedule>>? = null
-    private var scheduleObserver: Observer<List<Schedule>>? = null
+    private var schedules: LiveData<List<Schedule>> = MutableLiveData()
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         binding = DeleteLayoutBinding.inflate(layoutInflater)
@@ -39,15 +38,14 @@ class DeleteActivity : AppCompatActivity() {
         val pos = binding.spinner.selectedItemPosition
         val etArray = mutableListOf<String>()
         val calendar = Calendar.getInstance()
-        val flag1 = binding.etYear.text.toString().isEmpty()
-        val flag2 = binding.etMonth.text.toString().isEmpty()
-        val flag3 = binding.etDay.text.toString().isEmpty()
-
-        if ((flag1 || flag2 || flag3) && !(flag1 && flag2 && flag3)) {
+        val yearFlag = binding.etYear.text.toString().isEmpty()
+        val monthFlag = binding.etMonth.text.toString().isEmpty()
+        val dayFlag = binding.etDay.text.toString().isEmpty()
+        if ((yearFlag || monthFlag || dayFlag) && !(yearFlag && monthFlag && dayFlag)) {
             Toast.makeText(this@DeleteActivity, "년, 월, 일을 모두 입력하거나 모두 비워야 합니다.", Toast.LENGTH_SHORT).show()
         } else {
             var date = ""
-            if (!flag1) {
+            if (!yearFlag) {
                 calendar.set(
                     binding.etYear.text.toString().toInt(),
                     binding.etMonth.text.toString().toInt() - 1,
@@ -59,16 +57,14 @@ class DeleteActivity : AppCompatActivity() {
             etArray.add(binding.etTitle.text.toString())
             etArray.add(binding.etContent.text.toString())
             schedules = myViewModel.advancedSearch(pos, etArray)
-            scheduleObserver?.let { schedules?.removeObserver(it) }
-            scheduleObserver = Observer {
+            schedules.observe(this){
                 setData()
             }
-            schedules?.observe(this, scheduleObserver!!)
         }
     }
     private fun setData() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter.updateData(schedules?.value!!)
+        schedules.value?.let { adapter.updateData(it) }
     }
 
     private fun setupListeners() {
@@ -122,10 +118,6 @@ class DeleteActivity : AppCompatActivity() {
             .setNegativeButton("취소", null)
             .create()
         confirmationDialog.show()
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        scheduleObserver?.let { schedules?.removeObserver(it) }
     }
 
 }
