@@ -1,5 +1,6 @@
 package com.example.myschedule.customView
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -14,6 +15,7 @@ import com.example.myschedule.db.Schedule
 import kotlin.math.cos
 import kotlin.math.sin
 
+@SuppressLint("ViewConstructor")
 class CircularSectorFormSchedule(
     context: Context,
     attrs: AttributeSet?,
@@ -99,5 +101,4 @@ class CircularSectorFormSchedule(
     fun getCentralAngle(): Float{
         return centralAngle
     }
-
 }

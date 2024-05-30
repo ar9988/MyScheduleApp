@@ -81,7 +81,7 @@ class InputActivity: AppCompatActivity()  {
                     calendar.timeInMillis = dateInMillis
                     binding.etYear.setText(calendar.get(Calendar.YEAR).toString())
                     binding.etMonth.setText(getString(
-                        R.string.month_placeholder,
+                        R.string.int_placeholder,
                         calendar.get(Calendar.MONTH) + 1
                     ))
                     binding.etDay.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())
@@ -99,7 +99,7 @@ class InputActivity: AppCompatActivity()  {
                     calendar.timeInMillis = dateInMillis
                     binding.etYear2.setText(calendar.get(Calendar.YEAR).toString())
                     binding.etMonth2.setText(getString(
-                        R.string.month_placeholder,
+                        R.string.int_placeholder,
                         calendar.get(Calendar.MONTH) + 1
                     ))
                     binding.etDay2.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())

@@ -69,7 +69,7 @@ class DeleteActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyScheduleAdapterDelete(emptyList())
+        adapter = MyScheduleAdapterDelete(emptyList(), this)
         binding.recyclerView.adapter = adapter
         binding.DatePicker.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker()
@@ -81,7 +81,7 @@ class DeleteActivity : AppCompatActivity() {
                 calendar.timeInMillis = dateInMillis
                 binding.etYear.setText(calendar.get(Calendar.YEAR).toString())
                 binding.etMonth.setText(getString(
-                    R.string.month_placeholder,
+                    R.string.int_placeholder,
                     calendar.get(Calendar.MONTH) + 1
                 ))
                 binding.etDay.setText(calendar.get(Calendar.DAY_OF_MONTH).toString())

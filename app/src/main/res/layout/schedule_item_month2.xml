@@ -6,7 +6,7 @@
     android:id="@+id/backGround">
     <TextView
         android:id="@+id/title"
-        android:text="test"
+        android:text=""
         android:maxLines="1"
         android:ellipsize="end"
         android:textAlignment="center"

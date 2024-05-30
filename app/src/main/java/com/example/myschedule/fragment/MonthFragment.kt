@@ -111,7 +111,7 @@ class MonthFragment :Fragment(){
         )
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         if(dayOfWeek!=1) sortedSchedule.add(0, mutableListOf())
-        val adapter = MyScheduleAdapterMonth(sortedSchedule,dayOfWeek)
+        val adapter = MyScheduleAdapterMonth(sortedSchedule,dayOfWeek,requireContext())
         myAdapter = adapter
         val recyclerView = binding.recyclerView
         if (itemTouchListener != null) {
@@ -142,7 +142,7 @@ class MonthFragment :Fragment(){
                         val position = rv.getChildAdapterPosition(child)
                         val list = adapter.getItem(position)
                         if(list.size!=0){
-                            val sheetAdapter = MyScheduleAdapterFragment(list)
+                            val sheetAdapter = MyScheduleAdapterFragment(list,requireContext())
                             val bottomSheet = MyBottomSheetFragment(sheetAdapter)
                             bottomSheet.show(requireActivity().supportFragmentManager, MyBottomSheetFragment.TAG)
                         }

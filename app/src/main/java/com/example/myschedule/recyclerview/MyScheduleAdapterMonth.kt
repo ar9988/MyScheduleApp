@@ -1,13 +1,18 @@
 package com.example.myschedule.recyclerview
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myschedule.R
 import com.example.myschedule.databinding.ScheduleItemMonthBinding
 import com.example.myschedule.db.Schedule
 
-class MyScheduleAdapterMonth(private var itemList: MutableList<MutableList<Schedule>>,private val dayOfWeek: Int): RecyclerView.Adapter<MyScheduleAdapterMonth.Holder>() {
+class MyScheduleAdapterMonth(
+    private var itemList: MutableList<MutableList<Schedule>>,
+    private val dayOfWeek: Int,
+    private val context: Context): RecyclerView.Adapter<MyScheduleAdapterMonth.Holder>() {
     private lateinit var parentRecyclerView: RecyclerView
     inner class Holder(binding: ScheduleItemMonthBinding) : RecyclerView.ViewHolder(binding.root) {
         val date = binding.calendarDate
@@ -27,7 +32,7 @@ class MyScheduleAdapterMonth(private var itemList: MutableList<MutableList<Sched
     override fun onBindViewHolder(holder: Holder, position: Int) {
         if(dayOfWeek!=1){
             if(position!=0) {
-                holder.date.text = (position).toString()
+                holder.date.text = context.getString(R.string.int_placeholder,position)
                 holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
                 val adapter = MyScheduleAdapterMonth2(itemList[position])
                 holder.childAdapter = adapter
@@ -35,7 +40,7 @@ class MyScheduleAdapterMonth(private var itemList: MutableList<MutableList<Sched
             }
         }
         else{
-            holder.date.text = (position+1).toString()
+            holder.date.text = context.getString(R.string.int_placeholder, position+1)
             holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
             val adapter = MyScheduleAdapterMonth2(itemList[position])
             holder.recyclerView.adapter = adapter

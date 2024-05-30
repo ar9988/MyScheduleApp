@@ -61,6 +61,11 @@
     <string name="tv2Txt">일정 내용 :</string>
     <string name="tv0Txt">유형 :</string>
     <string name="datePickerHint">calendarBtn</string>
-    <string name="month_placeholder">%d</string>
+    <string name="int_placeholder">%d</string>
     <string name="calendar_text">%d년 %d월</string>
+    <string name="_schedule">일정</string>
+    <string name="_content">내용</string>
+    <string name="adapter_text1">%1$s시 %2$s분 ~ %3$s시 %4$s분</string>
+    <string name="adapter_text2">%1s\n%2$s시 %3$s분 ~ %4$s시 %5$s분</string>
+    <string name="adapter_text3">%1s~%2s\n%3$s시 %4$s분 ~ %5$s시 %6$s분</string>
 </resources>

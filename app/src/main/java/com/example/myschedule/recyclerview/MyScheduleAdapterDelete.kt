@@ -1,12 +1,17 @@
 package com.example.myschedule.recyclerview
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myschedule.R
 import com.example.myschedule.databinding.ScheduleItemDeleteBinding
 import com.example.myschedule.db.Schedule
 
-class MyScheduleAdapterDelete(private var scheduleList: List<Schedule>) : RecyclerView.Adapter<MyScheduleAdapterDelete.ScheduleViewHolder>(){
+class MyScheduleAdapterDelete(
+    private var scheduleList: List<Schedule>,
+    private val context:Context
+) : RecyclerView.Adapter<MyScheduleAdapterDelete.ScheduleViewHolder>(){
     private val checkedItems = HashSet<Schedule>()
     inner class ScheduleViewHolder(val binding: ScheduleItemDeleteBinding) : RecyclerView.ViewHolder(binding.root){
 
@@ -16,14 +21,36 @@ class MyScheduleAdapterDelete(private var scheduleList: List<Schedule>) : Recycl
             val times = schedule.startTime.split("-")+schedule.endTime.split("-")
             when(schedule.type){
                 0->{
-                    binding.date.text = "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
+                    binding.date.text = context.getString(
+                        R.string.adapter_text1,
+                        times[0],
+                        times[1],
+                        times[2],
+                        times[3]
+                    )
                 }
                 1->{
-                    binding.date.text = schedule.startDate+"\n"+ "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
+                    binding.date.text = context.getString(
+                        R.string.adapter_text2,
+                        schedule.startDate,
+                        times[0],
+                        times[1],
+                        times[2],
+                        times[3]
+                    )
+                    //binding.date.text = schedule.startDate+"\n"+ "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
                 }
                 2->{
-
-                    binding.date.text = schedule.startDate+"~"+schedule.endDate+"\n"+ "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
+                    binding.date.text = context.getString(
+                        R.string.adapter_text3,
+                        schedule.startDate,
+                        schedule.endDate,
+                        times[0],
+                        times[1],
+                        times[2],
+                        times[3]
+                    )
+                    //binding.date.text = schedule.startDate+"~"+schedule.endDate+"\n"+ "${times[0]}시 ${times[1]}분 ~ ${times[2]}시 ${times[3]}분"
                 }
             }
             binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
