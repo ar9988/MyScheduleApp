@@ -10,6 +10,7 @@ import android.graphics.PathMeasure
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import com.example.myschedule.application.calculateTime2
 import com.example.myschedule.databinding.DayLayoutBinding
 import com.example.myschedule.db.Schedule
 import kotlin.math.cos
@@ -50,8 +51,8 @@ class CircularSectorFormSchedule(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val times = schedule.startTime.split("-")+schedule.endTime.split("-")
-        val startTime = (times[0].toFloat() * 60 + times[1].toFloat()) * 0.25
-        val endTime = (times[2].toFloat() * 60 + times[3].toFloat()) * 0.25
+        val startTime = calculateTime2(times[0],times[1])
+        val endTime = calculateTime2(times[2],times[3])
         val sweepAngle = if (endTime > startTime) endTime - startTime else (24F * 60 * 0.25 - startTime) + endTime
         startAngle = startTime.toFloat()-90F
         if(startAngle<0F){

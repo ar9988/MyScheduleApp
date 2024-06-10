@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.myschedule.R
+import com.example.myschedule.application.calculateTime
 import com.example.myschedule.databinding.InputLayoutBinding
 import com.example.myschedule.db.Schedule
 import com.example.myschedule.viewModel.MyViewModel
@@ -204,7 +205,7 @@ class InputActivity: AppCompatActivity()  {
                             }
                             startTime = "$hour-$minute"
                             endTime = "$hour2-$minute2"
-                            if (startTime>endTime) {
+                            if (type!=0&&calculateTime(hour,minute)>calculateTime(hour2,minute2)) {
                                 Toast.makeText(this@InputActivity, "옳바른 시간을 입력하세요", Toast.LENGTH_SHORT).show()
                                 return@launch
                             }

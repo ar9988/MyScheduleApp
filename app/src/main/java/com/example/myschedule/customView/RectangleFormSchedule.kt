@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
+import com.example.myschedule.application.calculateTime
 import com.example.myschedule.db.Schedule
 
 @SuppressLint("ViewConstructor")
@@ -19,8 +20,8 @@ class RectangleFormSchedule(
 ) : View(context, attrs) {
     private val paint = Paint()
     private val times = schedule.startTime.split("-")+schedule.endTime.split("-")
-    private val startTime = times[0].toInt()*60+times[1].toInt()
-    private val endTime = times[2].toInt()*60+times[3].toInt()
+    private val startTime = calculateTime(times[0],times[1])
+    private val endTime = calculateTime(times[2],times[3])
     private val paint2 = Paint().apply {
         style = Paint.Style.STROKE
         color = Color.BLACK
